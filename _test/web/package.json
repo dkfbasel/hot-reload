@@ -1,7 +1,7 @@
 {
-  "name": "platypus.gcpkurse",
-  "version": "0.26.0",
-  "description": "E-learning for the Good Clinical Practice course at the Clinical Trial Unit, University Hospital Basel",
+  "name": "test-project",
+  "version": "1.0.0",
+  "description": "Test project for development of golang/vue.js web applications with docker containers",
   "author": "Dr. med. Ramon Saccilotto, Department of Clinical Research, University Hospital Basel",
   "scripts": {
     "dev": "webpack-dev-server --content-base _build/ --inline --hot --quiet --host 0.0.0.0 --port 8080",

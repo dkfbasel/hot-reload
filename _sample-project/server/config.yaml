@@ -1,8 +1,0 @@
-# host address
-host: 0.0.0.0:80
-
-# public directory for html content
-publicDirectory: /platypus/web
-
-# test message
-message: Hello and welcome to vendoring.. it is me

@@ -26,23 +26,23 @@ func main() {
 		fmt.Println("Configuration settings incomplete:", err.Error())
 	}
 
-	fmt.Printf("Loaded data from configuration: %s\n", config.Message)
-
-	// taskid := uuid(10)
-	//
-	// for {
-	// 	fmt.Printf("%s: still running\n", taskid)
-	// 	time.Sleep(1 * time.Second)
-	// }
+	fmt.Printf("Message: %s\n", config.Message)
+	fmt.Printf("Host: %s\n", config.Port)
+	fmt.Printf("PublicDirectory: %s\n", config.PublicDirectory)
 
 	// start a simple webserver serving the assets directory and providing a
 	// simple api call
 	http.HandleFunc("/api", func(w http.ResponseWriter, req *http.Request) {
-		io.WriteString(w, "Hello there: the uuid is: "+uuid(10)+"\n")
+		io.WriteString(w, "Hello there.. the uuid is "+uuid(10)+"\n")
+	})
+
+	// serve the index file on the main port
+	http.HandleFunc("/", func(w http.ResponseWriter, req *http.Request) {
+		http.ServeFile(w, req, config.PublicDirectory+"/index.html")
 	})
 
 	fs := http.FileServer(http.Dir(config.PublicDirectory))
-	http.Handle("/", fs)
+	http.Handle("/assets", fs)
 
 	fmt.Println("Starting server on", config.Port)
 	http.ListenAndServe(config.Port, nil)
