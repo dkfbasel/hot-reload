@@ -31,11 +31,9 @@ func main() {
 	// Print package name for the user
 	fmt.Printf("PACKAGE: %s\n\n", gopackage)
 
-	// remove the last directory to allow direct symlinking
-	withoutLastDirectory := removeLastDirectory(gopackage)
-
-	// create the directories in the path to our package
-	mkdir := exec.Command("mkdir", "-p", "/go/src/"+withoutLastDirectory)
+	// create the directories in the path to our package. note that we remove the
+	// last directory to allow symlinking to work as expected
+	mkdir := exec.Command("mkdir", "-p", "/go/src/"+removeLastDirectory(gopackage))
 
 	// redirect all output to the standard console
 	mkdir.Stdout = os.Stdout
