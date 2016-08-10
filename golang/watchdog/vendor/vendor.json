@@ -1,0 +1,13 @@
+{
+	"comment": "",
+	"ignore": "test",
+	"package": [
+		{
+			"checksumSHA1": "ZgMa4n4BsLjiIXxlubbFa4IIdJY=",
+			"path": "golang.org/x/exp/inotify",
+			"revision": "9a68861d0dd9409fde727ff6539a636f52147232",
+			"revisionTime": "2016-07-23T08:16:32Z"
+		}
+	],
+	"rootPath": "bitbucket.org/dkfbasel/development/symlink"
+}
