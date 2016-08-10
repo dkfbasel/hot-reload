@@ -24,8 +24,8 @@ func restartPackage(packagePath string) {
 	// run the build command and wait for it to exit
 	err := builder.Run()
 	if err != nil {
-		fmt.Fprintln(os.Stderr, "could not build the package", err)
-		log.Fatalln("stopping process")
+		fmt.Fprintln(os.Stderr, "ERROR: could not build the package", err)
+		return
 	}
 
 	// get the package name to run the package
@@ -55,7 +55,7 @@ func restartPackage(packagePath string) {
 	// run the program
 	err = runner.Start()
 	if err != nil {
-		fmt.Fprintln(os.Stderr, "could not run the package", err)
+		fmt.Fprintln(os.Stderr, "ERROR: could not run the package", err)
 	}
 
 }

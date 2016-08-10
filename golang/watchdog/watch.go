@@ -79,6 +79,12 @@ func initWatchlist(watcher *inotify.Watcher) filepath.WalkFunc {
 			return filepath.SkipDir
 		}
 
+		// ignore the root web directory (as this is watched and compiled with
+		// webpack in a separate docker container)
+		if strings.HasPrefix(path, "/app/web") {
+			return filepath.SkipDir
+		}
+
 		// watch all other directories
 		watcher.Watch(path)
 
