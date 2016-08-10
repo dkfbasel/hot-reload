@@ -1,0 +1,25 @@
+{
+	"comment": "",
+	"ignore": "test",
+	"package": [
+		{
+			"checksumSHA1": "hqDDDpue/5363luidNMBS8z8eJU=",
+			"path": "github.com/BurntSushi/toml",
+			"revision": "bec2dacf4b590d26237cfebff4471e21ce543494",
+			"revisionTime": "2016-07-12T16:55:23Z"
+		},
+		{
+			"checksumSHA1": "tVfmtFMvfZdKSyw21GtbxBRpC1s=",
+			"path": "github.com/jinzhu/configor",
+			"revision": "fb7a3183cd987802d006408fe3a4a9e1f6002ece",
+			"revisionTime": "2016-05-31T08:06:56Z"
+		},
+		{
+			"checksumSHA1": "+OgOXBoiQ+X+C2dsAeiOHwBIEH0=",
+			"path": "gopkg.in/yaml.v2",
+			"revision": "a83829b6f1293c91addabc89d0571c246397bbf4",
+			"revisionTime": "2016-03-01T20:40:22Z"
+		}
+	],
+	"rootPath": "bitbucket.org/dkfbasel/development/docker2/test-project"
+}
