@@ -1,0 +1,15 @@
+{
+  "name": "platypus.gcpkurse",
+  "version": "0.26.0",
+  "description": "E-learning for the Good Clinical Practice course at the Clinical Trial Unit, University Hospital Basel",
+  "author": "Dr. med. Ramon Saccilotto, Department of Clinical Research, University Hospital Basel",
+  "scripts": {
+    "dev": "webpack-dev-server --content-base _build/ --inline --hot --quiet --host 0.0.0.0 --port 8080",
+    "build": "cross-env NODE_ENV=production webpack --progress --hide-modules --config webpack.deploy.config.js"
+  },
+  "dependencies": {
+    "vue": "^1.0.15",
+    "vue-resource": "^0.7.0",
+    "vue-router": "^0.7.10"
+  }
+}
