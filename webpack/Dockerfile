@@ -45,18 +45,20 @@ RUN npm install -g \
     vue-style-loader@1.0.0 \
     vue-hot-reload-api@1.3.2
 
+# COPY THE LINKER UTILITY INTO THE BIN DIRECTORY
+COPY linker_linux_amd64 /bin/node-module-symlink
+
+# THIS WILL SYMLINK THE GLOBAL NODE-MODULES INTO OUR WEB DIRECTORY
+# ln -f -s /usr/local/lib/node_modules/* /app/web/node_modules/
+
 # MOUNT THE APPLICATION IN THE APP DIRECTORY
 VOLUME ["/app"]
-
-# TODO: use symlinking for the global node modules
-# EXPORT THE GLOBAL NODE PATH
-# "/usr/local/lib/node_modules"
-# SYMLINK THE GLOBAL NODE-MODULES INTO OUR WEB DIRECTORY
-# NOTE: this must be run after the container is linked
-# RUN ln -f -s /usr/local/lib/node_modules/* /app/web/node_modules/
 
 # EXPOSE THE PORT 8080 FOR EXTERNAL CONNECTIONS
 EXPOSE 8080
 
 # SET THE WORKING DIRECTORY
 WORKDIR /app/web
+
+# SYMLINK THE GLOBAL NODE-MODULES INTO THE WEBPACK NODE-MODULES DIRECTORY
+CMD ["/bin/node-module-symlink"]
