@@ -21,7 +21,7 @@ func createSymlinkForPackage(gopackagePath string) {
 
 	err := mkdir.Run()
 	if err != nil {
-		log.Fatalf("Command finished with error: %s\n", err)
+		log.Fatalf("mkdir command finished with error: %s\n", err)
 	}
 
 	// link our directory into the go src directory
@@ -33,7 +33,7 @@ func createSymlinkForPackage(gopackagePath string) {
 
 	err = symlink.Run()
 	if err != nil {
-		log.Fatalf("Command finished with error: %s\n", err)
+		log.Fatalf("ln command finished with error: %s\n", err)
 	}
 
 }
