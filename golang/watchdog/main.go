@@ -25,10 +25,10 @@ func main() {
 	config := parseConfiguration()
 
 	// print the information that was parsed from the flags
-	fmt.Printf("PACKAGE:\t%s\n", config.ProjectPath)
-	fmt.Printf("DIRECTORY:\t%s\n", config.Directory)
-	fmt.Printf("IGNORE:\t%s\n", strings.Join(config.Ignore, ", "))
-	fmt.Printf("ARGUMENTS:\t%s\n", strings.Join(config.Arguments, " "))
+	fmt.Printf("PACKAGE:    %s\n", config.ProjectPath)
+	fmt.Printf("DIRECTORY:  %s\n", config.Directory)
+	fmt.Printf("IGNORE:     %s\n", strings.Join(config.Ignore, ", "))
+	fmt.Printf("ARGUMENTS:  %s\n", strings.Join(config.Arguments, " "))
 
 	if config.ProjectPath == tmpProjectPath {
 		fmt.Printf("please note that import paths in the project directory will probably not work as intended")
