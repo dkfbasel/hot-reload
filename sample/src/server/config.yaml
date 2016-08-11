@@ -5,7 +5,7 @@ port: 0.0.0.0:80
 publicdirectory: ../web/public
 
 # test message
-message: this package will automatically be reloaded on save
+message: this package will automatically be reloaded on save..
 
 # rethinkdb service
 rethinkdb:

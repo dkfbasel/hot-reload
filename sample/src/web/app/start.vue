@@ -14,7 +14,7 @@
 	}
 
 	pre {
-		background #efefef;
+		background: tint(blue, 70%);
 		margin-top: 20px;
 		min-height: 80px;
 		line-height: 1.3em;
