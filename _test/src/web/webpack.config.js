@@ -18,7 +18,7 @@ module.exports = {
 	devServer: {
 		proxy: {
 			'/api*': {
-				target: 'http://localhost:2424',
+				target: 'http://golang.platypus',
 				secure: false,
 			}
 		},
