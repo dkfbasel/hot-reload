@@ -11,6 +11,6 @@ following commands
 
 > docker build -t development/webpack .
 
-> docker run --rm -ti -p 8080:8080 -v "$PWD/../_test:/app" -e "DIRECTORY=web" development/webpack
+> docker run --rm -ti -p 8080:8080 -v "$PWD/../sample:/app" -e "DIRECTORY=src/web" development/webpack
 
 ```

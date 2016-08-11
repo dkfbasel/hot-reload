@@ -11,5 +11,5 @@ following commands
 
 > docker build -t development/go .
 
-> docker run --rm -ti -p 8080:80 -v "$PWD/../_test:/app" -e "PROJECT=bitbucket.org/dkfbasel/test" -e "DIRECTORY=server" development/go
+> docker run --rm -ti -p 8080:80 -v "$PWD/../sample:/app" -e "PROJECT=bitbucket.org/dkfbasel/test" -e "DIRECTORY=src/server" development/go
 ```
