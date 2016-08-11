@@ -14,7 +14,7 @@ type Config struct {
 	ProjectPath string   // the base path to the project
 	Directory   string   // the subdirectory containing the current package
 	Ignore      []string // directories to ignore when watching for changes
-	Arguments   string   // arguments to pass to the service
+	Arguments   []string // arguments to pass to the service
 }
 
 func main() {
@@ -28,7 +28,7 @@ func main() {
 	fmt.Printf("PACKAGE:\t%s\n", config.ProjectPath)
 	fmt.Printf("DIRECTORY:\t%s\n", config.Directory)
 	fmt.Printf("IGNORE:\t%s\n", strings.Join(config.Ignore, ", "))
-	fmt.Printf("ARGUMENTS:\t%s\n", config.Arguments)
+	fmt.Printf("ARGUMENTS:\t%s\n", strings.Join(config.Arguments, " "))
 
 	if config.ProjectPath == tmpProjectPath {
 		fmt.Printf("please note that import paths in the project directory will probably not work as intended")
@@ -51,12 +51,13 @@ func parseConfiguration() Config {
 
 	// initialize a string for our ignore values
 	var ignore string
+	var arguments string
 
 	// parse additional information from the command line
 	flag.StringVar(&config.ProjectPath, "project", "", "the path of the project relative to the go source directory")
 	flag.StringVar(&config.Directory, "directory", "", "(optional) relative path to the directory of the current go package to watch")
 	flag.StringVar(&ignore, "ignore", "", "(optional) directories to ignore when watching for changes")
-	flag.StringVar(&config.Arguments, "args", "", "(optional) arguments to pass to the service on start")
+	flag.StringVar(&arguments, "args", "", "(optional) arguments to pass to the service on start")
 	flag.Parse()
 
 	// try to parse the data from the environment if not supplied via flag
@@ -72,8 +73,8 @@ func parseConfiguration() Config {
 		ignore = os.Getenv("IGNORE")
 	}
 
-	if config.Arguments == "" {
-		config.Arguments = os.Getenv("ARGUMENTS")
+	if arguments == "" {
+		arguments = os.Getenv("ARGUMENTS")
 	}
 
 	// set the project path to tmp if not specified -> this will break package
@@ -94,6 +95,10 @@ func parseConfiguration() Config {
 			value = strings.TrimSpace(value)
 			config.Ignore[index] = strings.TrimLeft(value, "/")
 		}
+	}
+
+	if arguments != "" {
+		config.Arguments = strings.Split(arguments, " ")
 	}
 
 	return config

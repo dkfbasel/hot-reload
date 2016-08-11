@@ -1,6 +1,7 @@
 package main
 
 import (
+	"flag"
 	"fmt"
 	"github.com/jinzhu/configor"
 	r "gopkg.in/dancannon/gorethink.v2"
@@ -34,6 +35,13 @@ func main() {
 	fmt.Printf("Message: %s\n", config.Message)
 	fmt.Printf("Host: %s\n", config.Port)
 	fmt.Printf("PublicDirectory: %s\n", config.PublicDirectory)
+
+	// try to parse arguments from the command line
+	var testArgument string
+	flag.StringVar(&testArgument, "test", "not defined", "please specify a test argument")
+	flag.Parse()
+
+	fmt.Printf("Flag test: %s\n", testArgument)
 
 	// start a simple webserver serving the assets directory and providing a
 	// simple api call

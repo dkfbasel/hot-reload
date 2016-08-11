@@ -9,7 +9,7 @@ import (
 )
 
 // restartPackage will rebuild the given package and restart the process
-func restartPackage(packagePath string, arguments string) {
+func restartPackage(packagePath string, arguments []string) {
 
 	fmt.Println("")
 	log.Println("BUILDING\n----------------------------")
@@ -43,7 +43,7 @@ func restartPackage(packagePath string, arguments string) {
 	_ = kill.Run()
 
 	// start the go executable
-	runner := exec.Command(executable, arguments)
+	runner := exec.Command(executable, arguments...)
 
 	// set the current directory to the packagePath
 	os.Chdir("/go/src/" + packagePath)
