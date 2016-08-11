@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"github.com/jinzhu/configor"
+	r "gopkg.in/dancannon/gorethink.v2"
 	"io"
 	"math/rand"
 	"net/http"
@@ -13,6 +14,10 @@ type Configuration struct {
 	Message         string `required:"true"`
 	PublicDirectory string `required:"true"`
 	Port            string `required:"true"`
+	RethinkDB       struct {
+		Address  string `required:"true"`
+		Database string `required:"true"`
+	}
 }
 
 var letters = []rune("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ")
@@ -34,6 +39,35 @@ func main() {
 	// simple api call
 	http.HandleFunc("/api", func(w http.ResponseWriter, req *http.Request) {
 		io.WriteString(w, "Hello there.. the uuid is "+uuid(10)+"\n")
+	})
+
+	// connect to the rethinkdb database
+	session, err := r.Connect(r.ConnectOpts{
+		Address:  config.RethinkDB.Address,
+		Database: config.RethinkDB.Database,
+	})
+
+	if err != nil {
+		fmt.Println("could not connect to the rethinkdb service")
+	}
+
+	// test if access to a different service will work as well. i.e. the rethinkdb
+	// database service
+	http.HandleFunc("/api/db", func(w http.ResponseWriter, req *http.Request) {
+		request, err := r.Expr("Hello World").Run(session)
+		if err != nil {
+			fmt.Println("could not run rethinkdb command\n", err)
+		}
+
+		var response string
+		err = request.One(&response)
+
+		if err != nil {
+			fmt.Println("could not fetch result from rethinkdb\n", err)
+		}
+
+		io.WriteString(w, "RethinkDB: "+response)
+
 	})
 
 	// serve the index file on the main port
