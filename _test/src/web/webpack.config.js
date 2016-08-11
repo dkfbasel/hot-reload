@@ -10,7 +10,7 @@ module.exports = {
 		public: [path.resolve(__dirname, 'app/main.js')],
 	},
 	output: {
-		path: path.resolve(__dirname, '../_build/assets'),
+		path: path.resolve(__dirname, './build/assets'),
 		filename: '[name].bundle.js',
 		publicPath: '/assets/'
 	},
@@ -48,14 +48,14 @@ module.exports = {
 			}, {
 				// parse stylus styles
 				test: /\.styl$/,
-				loader: 'style!css!stylus?paths=/usr/local/lib/node_modules/jeet/stylus/',
+				loader: 'style!css!stylus?paths=node_modules/jeet/stylus/',
 				exclude: [node_modules, global_modules]
 			}
 		],
 	},
 	vue: {
 		loaders: {
-			stylus: 'style!css!stylus?paths=/usr/local/lib/node_modules/jeet/stylus/',
+			stylus: 'style!css!stylus?paths=node_modules/jeet/stylus/',
 			exclude: [node_modules, global_modules]
 		}
 	},

@@ -2,7 +2,7 @@
 port: 0.0.0.0:80
 
 # public directory for html content
-publicdirectory: ../_build
+publicdirectory: ../build
 
 # test message
 message: this package will automatically be reloaded on save
