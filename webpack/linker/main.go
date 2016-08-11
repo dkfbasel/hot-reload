@@ -1,6 +1,7 @@
 package main
 
 import (
+	"errors"
 	"flag"
 	"fmt"
 	"os"
@@ -15,32 +16,50 @@ const webpackConfigFile = "webpack.config.js"
 func main() {
 
 	// define the initial directory that we are going to search through
-	var directory string
+	// as well as a command to run after linking
+	var directory, command string
 	flag.StringVar(&directory, "directory", "", "the path of the webpack directory")
+	flag.StringVar(&command, "command", "", "command to run after node modules are linked")
+	flag.Parse()
 
 	if directory == "" {
 		directory = os.Getenv("DIRECTORY")
 	}
 
 	if directory == "" {
-		directory = findWebpackDirectory("../../_test")
+		directory = findWebpackDirectory("/app")
 	} else {
 		directory = "/app/" + directory
 	}
 
 	if directory == "" {
-		fmt.Println("No webpack directory found. Please specify the directory using -e \"DIRECTORY=web\"")
+		fmt.Println("No webpack directory found.\nPlease specify the directory using -e \"DIRECTORY=web\"")
+		return
 	}
 
+	if command == "" {
+		command = os.Getenv("COMMAND")
+	}
+
+	if command == "" {
+		fmt.Println("No command specified that should be run.\nPlease specify using -e \"COMMAND=npm run dev\"")
+	}
+
+	// print the information that was parsed from the flags
+	fmt.Printf("DIRECTORY:  %s\n", directory)
+	fmt.Printf("COMMAND:    %s\n", command)
+
+	// link the global node modules into the local directory
 	err := symlinkGlobalNodeModules(directory)
 	if err != nil {
 		fmt.Println("could not symlink the global node modules:", err)
 		return
 	}
 
-	err = startWebpack(directory)
+	// start webpack with the command supplied
+	err = runCommand(directory, command)
 	if err != nil {
-		fmt.Println("could not start the webpack dev server:", err)
+		fmt.Println("could run the command supplied:", err)
 		return
 	}
 
@@ -114,11 +133,27 @@ func symlinkGlobalNodeModules(directory string) error {
 
 }
 
-// startWebpack will try to start a webpack dev server using the command
-// npm run dev.
-func startWebpack(directory string) error {
-	// start the webpack dev server using an npm run command
-	webpack := exec.Command("npm", "run", "dev")
+// runCommand will try to start a webpack dev server using the command
+// supplied by the user.
+func runCommand(directory string, command string) error {
+
+	// split the command into separate entries
+	items := strings.Split(command, " ")
+
+	var webpack *exec.Cmd
+
+	switch len(items) {
+	case 0:
+		return errors.New("No command specified")
+
+	case 1:
+		// start the webpack dev server using an npm run command
+		webpack = exec.Command(items[0])
+
+	default:
+		// start the webpack dev server using an npm run command
+		webpack = exec.Command(items[0], items[1:]...)
+	}
 
 	// set the current directory to the webpack directory
 	os.Chdir(directory)
