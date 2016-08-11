@@ -38,7 +38,7 @@ func main() {
 	// start a simple webserver serving the assets directory and providing a
 	// simple api call
 	http.HandleFunc("/api", func(w http.ResponseWriter, req *http.Request) {
-		io.WriteString(w, "Hello there.. the uuid is "+uuid(10)+"\n")
+		io.WriteString(w, "UUID: "+uuid(10)+"\n")
 	})
 
 	// connect to the rethinkdb database
