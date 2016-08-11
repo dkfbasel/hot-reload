@@ -6,3 +6,8 @@ publicdirectory: ../web/public
 
 # test message
 message: this package will automatically be reloaded on save
+
+# rethinkdb service
+rethinkdb:
+  address: rethinkdb.platypus:28015
+  database: test
