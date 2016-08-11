@@ -13,7 +13,7 @@
 
 	.wrapper {
 		width: 80%;
-		height: 200px;
+		min-height: 200px;
 		background: #fff;
 		margin: 40px auto;
 		padding: 40px;
