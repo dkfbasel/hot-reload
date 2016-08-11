@@ -8,9 +8,14 @@ import (
 	"strings"
 )
 
-// watchPackageDirectory will watch the /app volume for changes and rebuild the
+// watchForChanges will watch the /app volume for changes and rebuild the
 // package as soon as changes occur
-func watchPackageDirectory(gopackage string) {
+func watchForChanges(config Config) {
+
+	packagePath := config.ProjectPath + config.Directory
+
+	// rebuild and start the package
+	restartPackage(packagePath, config.Arguments)
 
 	// create a new file watcher utilizing inotify
 	watcher, err := inotify.NewWatcher()
@@ -20,7 +25,7 @@ func watchPackageDirectory(gopackage string) {
 
 	// set the watcher path on the volume directly as symlinks are not followed
 	// by inotify
-	err = filepath.Walk("/app", initWatchlist(watcher))
+	err = filepath.Walk("/app", initWatchlist(watcher, config.Ignore))
 	if err != nil {
 		log.Fatalln(err)
 	}
@@ -32,10 +37,8 @@ func watchPackageDirectory(gopackage string) {
 			// rebuild the package if something was modified
 			if (ev.Mask & inotify.IN_MODIFY) == inotify.IN_MODIFY {
 
-				// TODO: filter out all files that do not end in *.go or *.tmpl
-
 				// rebuild and restart the package
-				go restartPackage(gopackage)
+				go restartPackage(packagePath, config.Arguments)
 
 			} else if (ev.Mask & inotify.IN_CREATE) == inotify.IN_CREATE {
 
@@ -43,7 +46,7 @@ func watchPackageDirectory(gopackage string) {
 				addWatch(watcher, ev.Name)
 
 				// rebuild and restart the package
-				go restartPackage(gopackage)
+				go restartPackage(packagePath, config.Arguments)
 
 			} else if (ev.Mask & inotify.IN_DELETE) == inotify.IN_DELETE {
 
@@ -51,7 +54,7 @@ func watchPackageDirectory(gopackage string) {
 				removeWatch(watcher, ev.Name)
 
 				// rebuild and restart the package
-				go restartPackage(gopackage)
+				go restartPackage(packagePath, config.Arguments)
 
 			}
 
@@ -63,8 +66,18 @@ func watchPackageDirectory(gopackage string) {
 }
 
 // initWatchlist will return a function to watch all subdirectories of the given path
-func initWatchlist(watcher *inotify.Watcher) filepath.WalkFunc {
+func initWatchlist(watcher *inotify.Watcher, ignore []string) filepath.WalkFunc {
 
+	// skip some directories by default (i.e. vendor and versioning)
+	excludeDirs := []string{"/vendor", "/node_modules", ".git", ".svn"}
+
+	// prefix all ignored directory with /app to create an absolute path
+	ignorePaths := make([]string, len(ignore))
+	for index, value := range ignore {
+		ignorePaths[index] = "/app/" + value
+	}
+
+	// go through all directories
 	return func(path string, info os.FileInfo, err error) error {
 
 		// skip everything that is not a directory
@@ -72,16 +85,12 @@ func initWatchlist(watcher *inotify.Watcher) filepath.WalkFunc {
 			return nil
 		}
 
-		// skip some directories (i.e. vendor and versioning)
-		excludeDirs := []string{"/vendor", "/node_modules", ".git", ".svn"}
-
 		if containsAny(path, excludeDirs) == true {
 			return filepath.SkipDir
 		}
 
-		// ignore the root web directory (as this is watched and compiled with
-		// webpack in a separate docker container)
-		if strings.HasPrefix(path, "/app/web") {
+		// ignore all directories that have been specified to be skipped
+		if equalsAny(path, ignorePaths) {
 			return filepath.SkipDir
 		}
 
@@ -122,4 +131,17 @@ func containsAny(source string, matches []string) bool {
 	}
 
 	return false
+}
+
+// equalsAny will check whether the source equals any of the given strings
+func equalsAny(source string, matches []string) bool {
+
+	for _, element := range matches {
+		if source == element {
+			return true
+		}
+	}
+
+	return false
+
 }
