@@ -18,6 +18,7 @@ services:
         environment:
             - PROJECT=bitbucket.com/dkfbasel/development/test
             - DIRECTORY=src/server
+            - IGNORE=/dev,/src/web
 
     webpack:
         build:
