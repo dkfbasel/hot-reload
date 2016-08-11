@@ -1,0 +1,35 @@
+version: '2'
+
+networks:
+    platypus:
+        external: true
+
+services:
+    golang:
+        build:
+            context: .
+            dockerfile: golang-dockerfile
+        networks:
+            - platypus
+        ports:
+            - "3001:80"
+        volumes:
+            - ..:/app
+        environment:
+            - PROJECT=bitbucket.com/dkfbasel/development/test
+            - DIRECTORY=src/server
+
+    webpack:
+        build:
+            context: .
+            dockerfile: webpack-dockerfile
+        depends_on:
+            - golang
+        networks:
+            - platypus
+        ports:
+            - "3000:8080"
+        volumes:
+            - ..:/app
+        environment:
+            - DIRECTORY=src/web
