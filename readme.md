@@ -52,6 +52,50 @@ configuration required to start hot-reloading for the front and backend.
 docker-compose up
 ```
 
+```
+docker-compose.yml
+------------------
+
+version: '2'
+
+services:
+    golang:
+        image: dkfbasel/hot-reload-go:1.0.0
+        ports:
+            - "3001:80"
+        volumes:
+            - ..:/app
+        environment:
+            # project is required to make sure that the import paths to
+            # optional other packages in the same directory will work as expected
+            - PROJECT=github.com/dkfbasel/hot-reload/sample
+            # directory is required to set the current directory that should be
+            # used for building
+            - DIRECTORY=src/server
+            # ignore will indicate which directories to ignore from watching
+            - IGNORE=/src/web
+            # arguments can be used to specify arguments to pass to the executable
+            # on running
+            - ARGUMENTS=-test=someString
+
+    webpack:
+        image: dkfbasel/hot-reload-webpack:1.0.0
+        # note that the host port and the port on webpack should
+        # match to avoid cross origin request issues
+        ports:
+            - "3000:3000"
+        volumes:
+            - ..:/app
+        environment:
+            # directory will be used to define the folder where webpack should
+            # be started from and where the local node_modules are to be found
+            - DIRECTORY=src/web
+            # command defines the command to run after symlinking the global
+            # node modules into the local directoy
+            - COMMAND=npm run dev
+
+```
+
 It will load the development images specified - which allows for versioning
 of the containers - starts up all containers and start the hot-reload development.
 
