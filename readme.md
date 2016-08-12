@@ -96,11 +96,10 @@ services:
 
 ```
 
-It will load the development images specified - which allows for versioning
-of the containers - starts up all containers and start the hot-reload development.
+It will load the development images specified, which allows for versioning
+of the containers, starts up all containers and start the hot-reload development.
 
-Please note that we usually employ additional services in other docker containers
-- such as a db container - and connect all services through a network.
+Please note that we usually employ additional services in other docker containers, such as a db container, and connect all services through a network.
 
 All external golang packages should be vendored in the vendor directory. The
 container will not attempt to install any go packages - this will ensure full
@@ -120,7 +119,7 @@ TODO:
 
 - [ ] Roadmap: Allow connection to a cluster of services on a test server (to avoid the need of starting other micro and db services on the local machine)
 
-- [ ] Bugfix: Adding global webpack modules does not work correctly if some folder are already present
+- [ ] Bugfix: Adding global webpack modules does not work correctly if some folders are already present
 
 
 Building containers
