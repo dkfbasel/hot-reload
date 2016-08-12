@@ -102,7 +102,7 @@ of the containers, starts up all containers and start the hot-reload development
 Please note that we usually employ additional services in other docker containers, such as a db container, and connect all services through a network.
 
 All external golang packages should be vendored in the vendor directory. The
-container will not attempt to install any go packages - this will ensure full
+container will not attempt to install any go packages, this will ensure full
 control of the versioning for the developer and avoid the necessity of having
 a working internet connection.
 
