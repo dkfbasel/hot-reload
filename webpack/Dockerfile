@@ -34,6 +34,10 @@ RUN npm install -g \
     stylus@0.54.5 \
     template-html-loader@0.0.3
 
+# INSTALL THE EXTRACK TEXT PLUGIN (FOR SEPARATE CSS FILES)
+RUN npm install -g \
+    extract-text-webpack-plugin@1.0.1
+
 # INSTALL THE JEET STYLUS LIBRARY
 RUN npm install -g \
     jeet@6.1.4
@@ -46,7 +50,7 @@ RUN npm install -g \
     vue-hot-reload-api@1.3.2
 
 # COPY THE LINKER UTILITY INTO THE BIN DIRECTORY
-COPY linker_linux_amd64 /bin/node-module-symlink
+COPY hot-reload_linux_amd64 /bin/hot-reload
 
 # THIS WILL SYMLINK THE GLOBAL NODE-MODULES INTO OUR WEB DIRECTORY
 # ln -f -s /usr/local/lib/node_modules/* /app/web/node_modules/
@@ -58,4 +62,4 @@ VOLUME ["/app"]
 EXPOSE 8080
 
 # SYMLINK THE GLOBAL NODE-MODULES INTO THE WEBPACK NODE-MODULES DIRECTORY
-CMD ["/bin/node-module-symlink"]
+CMD ["/bin/hot-reload"]
