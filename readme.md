@@ -111,6 +111,17 @@ Webpack should be configured to pass api calls forward to the golang backend
 service. In addition the host of the webpack dev server should be set to 0.0.0.0
 to allow for docker to forward this port to the host (see package.json).
 
+TODO:
+----
+- [x] Enable hot reloading of go code
+- [x] Enable development mode for webpack
+- [x] Enable build mode for webpack
+- [x] Start services with a simple docker-compose up command
+
+- [ ] Roadmap: Allow connection to a cluster of services on a test server (to avoid the need of starting other micro and db services on the local machine)
+
+- [ ] Bugfix: Adding global webpack modules does not work correctly if some folder are already present
+
 
 Building containers
 -------------------
@@ -152,8 +163,3 @@ for subsequent builds until the command is changed.
 > docker run --rm -ti -p 3000:3000 -v "$PWD/../sample:/app" -e "DIRECTORY=src/web" -e "COMMAND=npm run dev" dkfbasel/hot-reload-webpack:1.0.0
 
 ```
-
-
-TODO:
-----
-- [ ] adding global webpack modules does not work correctly, maybe remove all linkinks before adding symlinks again or trying to symlink every directory on its own
