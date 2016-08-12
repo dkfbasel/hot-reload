@@ -44,13 +44,13 @@ func main() {
 		io.WriteString(w, "UUID: "+uuid(10)+"\n")
 	})
 
-	// serve the index file on the main port
-	http.HandleFunc("/", func(w http.ResponseWriter, req *http.Request) {
-		http.ServeFile(w, req, config.PublicDirectory+"/index.html")
-	})
-
 	fs := http.FileServer(http.Dir(config.PublicDirectory))
-	http.Handle("/assets", fs)
+	http.Handle("/", fs)
+
+	// // serve the index file on the main port
+	// http.HandleFunc("/", func(w http.ResponseWriter, req *http.Request) {
+	// 	http.ServeFile(w, req, config.PublicDirectory+"/index.html")
+	// })
 
 	fmt.Println("Starting server on", config.Port)
 	http.ListenAndServe(config.Port, nil)
