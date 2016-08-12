@@ -105,6 +105,11 @@ for subsequent builds until the command is changed.
 
 > docker build -t dkfbasel/hot-reload-webpack:1.0.0 .
 
-> docker run --rm -ti -p 3000:3000 -v "$PWD/../sample:/app" -e "DIRECTORY=src/web" dkfbasel/hot-reload-webpack:1.0.0
+> docker run --rm -ti -p 3000:3000 -v "$PWD/../sample:/app" -e "DIRECTORY=src/web" -e "COMMAND=npm run dev" dkfbasel/hot-reload-webpack:1.0.0
 
 ```
+
+
+TODO:
+----
+[] adding global webpack modules does not work correctly, maybe remove all linkinks before adding symlinks again or trying to symlink every directory on its own
