@@ -156,4 +156,4 @@ for subsequent builds until the command is changed.
 
 TODO:
 ----
-[] adding global webpack modules does not work correctly, maybe remove all linkinks before adding symlinks again or trying to symlink every directory on its own
+- [] adding global webpack modules does not work correctly, maybe remove all linkinks before adding symlinks again or trying to symlink every directory on its own
