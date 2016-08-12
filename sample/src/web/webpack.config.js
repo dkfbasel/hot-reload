@@ -3,14 +3,14 @@ var webpack = require('webpack');
 
 // define some post css plugins to use
 var node_modules = path.resolve(__dirname, 'node_modules');
-var global_modules = "/usr/local/lib/node_modules";
+var global_modules = '/usr/local/lib/node_modules';
 
 module.exports = {
 	entry: {
-		public: [path.resolve(__dirname, 'app/main.js')],
+		public: [path.resolve(__dirname, 'app/main.js')]
 	},
 	output: {
-		path: path.resolve(__dirname, './build/assets'),
+		path: path.resolve(__dirname, './public/assets'),
 		filename: '[name].bundle.js',
 		publicPath: '/assets/'
 	},
@@ -18,10 +18,13 @@ module.exports = {
 	devServer: {
 		proxy: {
 			'/api*': {
-				target: 'http://golang.platypus',
-				secure: false,
+				// note that the url to the server is the name
+				// of the service that was set in docker-compose.yml
+				// it is also possible to use networking and aliases
+				target: 'http://golang',
+				secure: false
 			}
-		},
+		}
 	},
 	module: {
 		loaders: [
@@ -51,7 +54,7 @@ module.exports = {
 				loader: 'style!css!stylus?paths=node_modules/jeet/stylus/',
 				exclude: [node_modules, global_modules]
 			}
-		],
+		]
 	},
 	vue: {
 		loaders: {
@@ -62,5 +65,5 @@ module.exports = {
 	babel: {
 		presets: ['es2015', 'stage-0'],
 		plugins: ['transform-runtime']
-	},
+	}
 };

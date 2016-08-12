@@ -6,15 +6,14 @@ var ExtractTextPlugin = require('extract-text-webpack-plugin');
 
 // define some post css plugins to use
 var node_modules = path.resolve(__dirname, 'node_modules');
+var global_modules = '/usr/local/lib/node_modules';
 
 module.exports = {
 	entry: {
-		public: [path.resolve(__dirname, 'app/public/main.js')],
-		internal: [path.resolve(__dirname, 'app/internal/main.js')],
-		admin: [path.resolve(__dirname, 'app/admin/main.js')],
+		public: [path.resolve(__dirname, 'app/main.js')]
 	},
 	output: {
-		path: path.resolve(__dirname, '../_build/web/assets'),
+		path: path.resolve(__dirname, './public/assets'),
 		filename: '[name].bundle.js',
 		publicPath: '/assets/'
 	},
@@ -24,35 +23,34 @@ module.exports = {
 				// parse vue components
 				test: /\.vue$/,
 				loader: 'vue',
-				exclude: node_modules
+				exclude: [node_modules, global_modules]
 			}, {
 				// edit this for additional asset file types
 				test: /\.(png|jpg|gif)$/,
 				loader: 'file?name=[name].[ext]?[hash]',
-				exclude: node_modules
+				exclude: [node_modules, global_modules]
 			}, {
 				// parse css styles
 				test: /\.css$/,
 				loader: 'style!css!postcss',
-				exclude: node_modules
+				exclude: [node_modules, global_modules]
 			}, {
 				// parse javascript files
 				test: /\.js$/,
 				loader: 'babel',
-				exclude: node_modules
+				exclude: [node_modules, global_modules]
 			}, {
 				// parse stylus styles
 				test: /\.styl$/,
 				loader: ExtractTextPlugin.extract('style', 'css!stylus?paths=node_modules/jeet/stylus/'),
-				exclude: node_modules
+				exclude: [node_modules, global_modules]
 			}
-		],
+		]
 	},
 	vue: {
 		loaders: {
 			stylus: ExtractTextPlugin.extract('style', 'css!stylus?paths=node_modules/jeet/stylus/'),
-			scss: 'style!css!sass',
-			exclude: node_modules,
+			exclude: [node_modules, global_modules]
 		}
 	},
 	babel: {
