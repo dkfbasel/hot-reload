@@ -1,6 +1,8 @@
 package main
 
 import (
+	"fmt"
+	"io/ioutil"
 	"log"
 	"os"
 	"os/exec"
@@ -9,11 +11,13 @@ import (
 
 // createSymlinkForPackage will create a new symlink from the app directory to
 // the specified package name in the go source directory
-func createSymlinkForPackage(gopackagePath string) {
+func createSymlinkForPackage(config Config) {
 
-	// create the directories in the path to our package. note that we remove the
-	// last directory to allow symlinking to work as expected
-	mkdir := exec.Command("mkdir", "-p", "/go/src/"+removeLastDirectory(gopackagePath))
+	// define the target directory to put the source code into (in the go src directory)
+	targetDirectory := "/go/src/" + config.ProjectPath + config.Directory
+
+	// create the directories in the path to our package
+	mkdir := exec.Command("mkdir", "-p", targetDirectory)
 
 	// redirect all output to the standard console
 	mkdir.Stdout = os.Stdout
@@ -24,16 +28,26 @@ func createSymlinkForPackage(gopackagePath string) {
 		log.Fatalf("mkdir command finished with error: %s\n", err)
 	}
 
-	// link our directory into the go src directory
-	symlink := exec.Command("ln", "-s", "-f", "/app/", "/go/src/"+gopackagePath)
+	sourceDirectory := "/app" + config.Directory
 
-	// redirect all output to the standard console
-	symlink.Stdout = os.Stdout
-	symlink.Stderr = os.Stderr
-
-	err = symlink.Run()
+	// get all directories in the global node module directory
+	directories, err := ioutil.ReadDir("/app" + config.Directory)
 	if err != nil {
-		log.Fatalf("ln command finished with error: %s\n", err)
+		fmt.Println("Error reading the application directory:\n", err)
+	}
+
+	for _, directory := range directories {
+		// symlink the global node modules into the directory
+		symlink := exec.Command("ln", "-s", "-f", sourceDirectory+"/"+directory.Name(), targetDirectory)
+
+		// redirect all output to the standard console
+		symlink.Stdout = os.Stdout
+		symlink.Stderr = os.Stderr
+
+		err := symlink.Run()
+		if err != nil {
+			fmt.Printf("Could not symlink %s.\n%s", directory.Name(), err)
+		}
 	}
 
 }

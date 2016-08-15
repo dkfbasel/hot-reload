@@ -35,7 +35,7 @@ func main() {
 	}
 
 	// create a symlink for the package to allow for compilation
-	createSymlinkForPackage(config.ProjectPath)
+	createSymlinkForPackage(config)
 
 	// watch the supplied directory for changes and rebuild and rerun the package
 	watchForChanges(config)
