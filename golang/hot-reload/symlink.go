@@ -31,14 +31,14 @@ func createSymlinkForPackage(config Config) {
 	sourceDirectory := "/app" + config.Directory
 
 	// get all directories in the global node module directory
-	directories, err := ioutil.ReadDir("/app" + config.Directory)
+	content, err := ioutil.ReadDir("/app" + config.Directory)
 	if err != nil {
 		fmt.Println("Error reading the application directory:\n", err)
 	}
 
-	for _, directory := range directories {
+	for _, item := range content {
 		// symlink the global node modules into the directory
-		symlink := exec.Command("ln", "-s", "-f", sourceDirectory+"/"+directory.Name(), targetDirectory)
+		symlink := exec.Command("ln", "-s", "-f", sourceDirectory+"/"+item.Name(), targetDirectory)
 
 		// redirect all output to the standard console
 		symlink.Stdout = os.Stdout
@@ -46,7 +46,7 @@ func createSymlinkForPackage(config Config) {
 
 		err := symlink.Run()
 		if err != nil {
-			fmt.Printf("Could not symlink %s.\n%s", directory.Name(), err)
+			fmt.Printf("Could not symlink %s.\n%s", item.Name(), err)
 		}
 	}
 

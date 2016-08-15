@@ -124,14 +124,14 @@ func symlinkGlobalNodeModules(directory string) error {
 	}
 
 	// get all directories in the global node module directory
-	directories, err := ioutil.ReadDir(globalNodePath)
+	content, err := ioutil.ReadDir(globalNodePath)
 	if err != nil {
 		fmt.Println("Error reading global node directory:\n", err)
 	}
 
-	for _, directory := range directories {
+	for _, item := range content {
 		// symlink the global node modules into the directory
-		symlink := exec.Command("ln", "-s", "-f", globalNodePath+"/"+directory.Name(), nodeModules)
+		symlink := exec.Command("ln", "-s", "-f", globalNodePath+"/"+item.Name(), nodeModules)
 
 		// redirect all output to the standard console
 		symlink.Stdout = os.Stdout
@@ -139,7 +139,7 @@ func symlinkGlobalNodeModules(directory string) error {
 
 		err := symlink.Run()
 		if err != nil {
-			fmt.Printf("Could not symlink %s.\n%s", directory.Name(), err)
+			fmt.Printf("Could not symlink %s.\n%s", item.Name(), err)
 		}
 	}
 
