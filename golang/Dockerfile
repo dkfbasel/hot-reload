@@ -7,7 +7,7 @@ LABEL copyright="Departement Klinische Forschung, Basel, Switzerland. 2015"
 # ADD A BASH SHELL
 RUN apk add --update bash && rm -rf /var/cache/apk/*
 
-# COPY THE WATCHDOG UTILITY INTO THE BIN DIRECTORY
+# COPY THE HOT RELOAD UTILITY INTO THE BIN DIRECTORY
 COPY hot-reload_linux_amd64 /bin/hot-reload
 
 # THE PROJECT TO WATCH SHOULD BE CONNECTED ON THE /APP VOLUME

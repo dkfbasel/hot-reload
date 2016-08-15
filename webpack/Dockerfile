@@ -49,7 +49,7 @@ RUN npm install -g \
     vue-style-loader@1.0.0 \
     vue-hot-reload-api@1.3.2
 
-# COPY THE LINKER UTILITY INTO THE BIN DIRECTORY
+# COPY THE HOT RELOAD UTILITY INTO THE BIN DIRECTORY
 COPY hot-reload_linux_amd64 /bin/hot-reload
 
 # THIS WILL SYMLINK THE GLOBAL NODE-MODULES INTO OUR WEB DIRECTORY
