@@ -21,7 +21,7 @@ module.exports = {
 				// note that the url to the server is the name
 				// of the service that was set in docker-compose.yml
 				// it is also possible to use networking and aliases
-				target: 'http://golang',
+				target: 'http://api',
 				secure: false
 			}
 		}
