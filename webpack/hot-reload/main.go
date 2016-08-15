@@ -4,6 +4,7 @@ import (
 	"errors"
 	"flag"
 	"fmt"
+	"io/ioutil"
 	"os"
 	"os/exec"
 	"path"
@@ -12,6 +13,7 @@ import (
 )
 
 const webpackConfigFile = "webpack.config.js"
+const globalNodePath = "/usr/local/lib/node_modules"
 
 func main() {
 
@@ -121,16 +123,27 @@ func symlinkGlobalNodeModules(directory string) error {
 		os.Mkdir(nodeModules, 0777)
 	}
 
-	// symlink the global node modules into the directory
-	symlink := exec.Command("ln", "-s", "-f", "/usr/local/lib/node_modules/*", nodeModules)
+	// get all directories in the global node module directory
+	directories, err := ioutil.ReadDir(globalNodePath)
+	if err != nil {
+		fmt.Println("Error reading global node directory:\n", err)
+	}
 
-	// redirect all output to the standard console
-	symlink.Stdout = os.Stdout
-	symlink.Stderr = os.Stderr
+	for _, directory := range directories {
+		// symlink the global node modules into the directory
+		symlink := exec.Command("ln", "-s", "-f", globalNodePath+"/"+directory.Name(), nodeModules)
 
-	err := symlink.Run()
-	return err
+		// redirect all output to the standard console
+		symlink.Stdout = os.Stdout
+		symlink.Stderr = os.Stderr
 
+		err := symlink.Run()
+		if err != nil {
+			fmt.Printf("Could not symlink %s.\n%s", directory.Name(), err)
+		}
+	}
+
+	return nil
 }
 
 // runCommand will try to start a webpack dev server using the command
