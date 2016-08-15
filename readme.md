@@ -125,8 +125,6 @@ TODO:
 
 - [ ] Roadmap: Allow connection to a cluster of services on a test server (to avoid the need of starting other micro and db services on the local machine)
 
-- [ ] Bugfix: Adding global webpack modules does not work correctly if some folders are already present
-
 
 Building containers
 -------------------
