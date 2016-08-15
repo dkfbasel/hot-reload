@@ -14,7 +14,7 @@ import (
 func createSymlinkForPackage(config Config) {
 
 	// define the target directory to put the source code into (in the go src directory)
-	targetDirectory := "/go/src/" + config.ProjectPath + config.Directory
+	targetDirectory := "/go/src/" + config.ProjectPath
 
 	// create the directories in the path to our package
 	mkdir := exec.Command("mkdir", "-p", targetDirectory)
@@ -28,10 +28,11 @@ func createSymlinkForPackage(config Config) {
 		log.Fatalf("mkdir command finished with error: %s\n", err)
 	}
 
-	sourceDirectory := "/app" + config.Directory
+	// define the source directory for the symlinking
+	sourceDirectory := "/app"
 
 	// get all directories in the global node module directory
-	content, err := ioutil.ReadDir("/app" + config.Directory)
+	content, err := ioutil.ReadDir(sourceDirectory)
 	if err != nil {
 		fmt.Println("Error reading the application directory:\n", err)
 	}
