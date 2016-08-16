@@ -3,7 +3,7 @@ version: '2'
 services:
 
     api:
-        image: dkfbasel/hot-reload-go:1.0.0
+        image: dkfbasel/hot-reload-go:1.1.0
         ports:
             - "3001:80"
         volumes:
