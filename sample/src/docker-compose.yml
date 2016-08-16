@@ -2,17 +2,12 @@ version: '2'
 
 services:
 
-    data:
-        image: dkfbasel/hot-reload-data:1.0.0
-        volumes:
-            - ..:/app
-
     api:
         image: dkfbasel/hot-reload-go:1.0.0
         ports:
             - "3001:80"
-        volumes_from:
-            - data
+        volumes:
+            - ..:/app
         environment:
             # project is required to make sure that the import paths to
             # optional other packages in the same directory will work as expected
@@ -32,8 +27,8 @@ services:
         # match to avoid cross origin request issues
         ports:
             - "3000:3000"
-        volumes_from:
-            - data
+        volumes:
+            - ..:/app
         environment:
             # directory will be used to define the folder where webpack should
             # be started from and where the local node_modules are to be found
