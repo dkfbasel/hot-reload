@@ -59,18 +59,13 @@ docker-compose.yml
 version: '2'
 
 services:
-    data:
-        image: dkfbasel/hot-reload-data:1.0.0
-        # the data image will be used to bind the code directory to multiple services
-        volumes:
-            - ..:/app
 
     api:
         image: dkfbasel/hot-reload-go:1.0.0
         ports:
             - "3001:80"
-        volumes_from:
-            - data
+        volumes:
+            - ..:/app
         environment:
             # project is required to make sure that the import paths to
             # optional other packages in the same directory will work as expected
@@ -90,8 +85,8 @@ services:
         # match to avoid cross origin request issues
         ports:
             - "3000:3000"
-        volumes_from:
-            - data
+        volumes:
+            - ..:/app
         environment:
             # directory will be used to define the folder where webpack should
             # be started from and where the local node_modules are to be found
@@ -164,21 +159,5 @@ for subsequent builds until the command is changed.
 > docker build -t dkfbasel/hot-reload-webpack:1.0.0 .
 
 > docker run --rm -ti -p 3000:3000 -v "$PWD/../sample:/app" -e "DIRECTORY=src/web" -e "COMMAND=npm run dev" dkfbasel/hot-reload-webpack:1.0.0
-
-```
-
-Data: We will use a data only container to make the project directory accessible
-to multiple containers. However, docker compose requires a command to be present
-to start a container. Therefore we will build a simple container that starts a
-command that basically does nothing.
-
-```
-> cd data
-
-> gox -osarch="linux/amd64" -output="noop_linux_amd64" github.com/dkfbasel/hot-reload/data
-
-> docker build -t dkfbasel/hot-reload-data:1.0.0 .
-
-> docker run --rm -ti "$PWD/../sample:/app" dkfbasel/hot-reload-data:1.0.0
 
 ```
