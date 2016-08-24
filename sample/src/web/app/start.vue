@@ -1,7 +1,7 @@
 <style lang="stylus" scoped>
 
 	// test jeet integration
-	@require('jeet/_jeet.styl');
+	@require('jeet');
 
 	button {
 		padding: 8px 12px;

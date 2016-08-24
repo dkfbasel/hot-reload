@@ -40,7 +40,7 @@ RUN npm install -g \
 
 # INSTALL THE JEET STYLUS LIBRARY
 RUN npm install -g \
-    jeet@6.1.4
+    jeet@6.0.0
 
 # INSTALL VUE LOADERS
 RUN npm install -g \
