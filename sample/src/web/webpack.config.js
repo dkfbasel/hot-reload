@@ -1,9 +1,9 @@
 var path = require('path');
 var webpack = require('webpack');
 
-// define some post css plugins to use
+// define the app directory to include in compilation
 var node_modules = path.resolve(__dirname, 'node_modules');
-var global_modules = '/usr/local/lib/node_modules';
+var app_directory = path.resolve(__dirname, 'app');
 
 module.exports = {
 	entry: {
@@ -32,34 +32,34 @@ module.exports = {
 				// parse vue components
 				test: /\.vue$/,
 				loader: 'vue',
-				exclude: [node_modules, global_modules]
+				include: [app_directory]
 			}, {
 				// edit this for additional asset file types
 				test: /\.(png|jpg|gif)$/,
 				loader: 'file?name=[name].[ext]?[hash]',
-				exclude: [node_modules, global_modules]
+				include: [app_directory]
 			}, {
 				// parse css styles
 				test: /\.css$/,
 				loader: 'style!css!postcss',
-				exclude: [node_modules, global_modules]
+				include: [app_directory]
 			}, {
 				// parse javascript files
 				test: /\.js$/,
 				loader: 'babel',
-				exclude: [node_modules, global_modules]
+				include: [app_directory]
 			}, {
 				// parse stylus styles
 				test: /\.styl$/,
 				loader: 'style!css!stylus?paths=node_modules/jeet/stylus/',
-				exclude: [node_modules, global_modules]
+				include: [app_directory]
 			}
 		]
 	},
 	vue: {
 		loaders: {
 			stylus: 'style!css!stylus?paths=node_modules/jeet/stylus/',
-			exclude: [node_modules, global_modules]
+			include: [app_directory]
 		}
 	},
 	babel: {
