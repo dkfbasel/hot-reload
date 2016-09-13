@@ -1,7 +1,5 @@
-Hot-reload development for Go and Vue.js on OS X (alpha)
-=======================================================
-
-CURRENTLY IN ALPHA STATUS!!
+Hot-reload development for Go and Vue.js on OS X
+================================================
 
 Note: Please be aware, that the statements and utilities provided are very
 opinionated and that you should have some basic understanding on how to use webpack.
