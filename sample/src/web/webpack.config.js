@@ -61,6 +61,11 @@ module.exports = {
 			include: [app_directory]
 		}
 	},
+	resolve: {
+		alias: {
+			vue: 'vue/dist/vue.js'
+		}
+	},
 	babel: {
 		presets: ['es2015', 'stage-0'],
 		plugins: ['transform-runtime']
