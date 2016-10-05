@@ -2,7 +2,6 @@ var path = require('path');
 var webpack = require('webpack');
 
 // define the app directory to include in compilation
-var node_modules = path.resolve(__dirname, 'node_modules');
 var app_directory = path.resolve(__dirname, 'app');
 
 module.exports = {
