@@ -14,7 +14,7 @@ RUN npm install -g \
     webpack-dev-server@1.14.1
 
 RUN npm install -g \
-    cross-env@2.0.0
+    cross-env@3.1.1
 
 # INSTALL BABEL FOR COMPILE JAVASCRIPT
 RUN npm install -g \
@@ -29,7 +29,7 @@ RUN npm install -g \
 RUN npm install -g \
     file-loader@0.9.0 \
     style-loader@0.13.1 \
-    css-loader@0.23.1 \
+    css-loader@0.25.0 \
     stylus-loader@2.1.2 \
     stylus@0.54.5 \
     template-html-loader@0.0.3
@@ -44,10 +44,10 @@ RUN npm install -g \
 
 # INSTALL VUE LOADERS
 RUN npm install -g \
-    vue-loader@8.5.3 \
+    vue-loader@9.5.1 \
     vue-html-loader@1.2.3 \
     vue-style-loader@1.0.0 \
-    vue-hot-reload-api@1.3.2
+    vue-hot-reload-api@2.0.6
 
 # COPY THE HOT RELOAD UTILITY INTO THE BIN DIRECTORY
 COPY hot-reload_linux_amd64 /bin/hot-reload

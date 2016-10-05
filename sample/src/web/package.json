@@ -8,8 +8,8 @@
     "build": "cross-env NODE_ENV=production webpack --progress --hide-modules --config webpack.deploy.config.js"
   },
   "dependencies": {
-    "vue": "^1.0.15",
-    "vue-resource": "^0.7.0",
-    "vue-router": "^0.7.10"
+    "vue": "^2.0.1",
+    "vue-resource": "^1.0.3",
+    "vue-router": "^2.0.0"
   }
 }
