@@ -6,7 +6,6 @@ import (
 	"log"
 	"os"
 	"os/exec"
-	"strings"
 )
 
 // createSymlinkForPackage will create a new symlink from the app directory to
@@ -50,14 +49,5 @@ func createSymlinkForPackage(config Config) {
 			fmt.Printf("Could not symlink %s.\n%s", item.Name(), err)
 		}
 	}
-
-}
-
-// removeLastDirectory will remove the last directory name from the given
-// path to allow for direct symlinking
-func removeLastDirectory(filepath string) string {
-
-	parts := strings.Split(filepath, "/")
-	return strings.Join(parts[:len(parts)-1], "/")
 
 }

@@ -59,7 +59,7 @@ version: '2'
 services:
 
     api:
-        image: dkfbasel/hot-reload-go:1.1.0
+        image: dkfbasel/hot-reload-go:1.2.0
         ports:
             - "3001:80"
         volumes:
@@ -134,9 +134,9 @@ following commands
 
 > gox -osarch="linux/amd64" -output="hot-reload_linux_amd64" github.com/dkfbasel/hot-reload/golang/hot-reload
 
-> docker build -t dkfbasel/hot-reload-go:1.1.0 .
+> docker build -t dkfbasel/hot-reload-go:1.2.0 .
 
-> docker run --rm -ti -p 3001:80 -v "$PWD/../sample:/app" -e "PROJECT=github.com/dkfbasel/hot-reload/sample" -e "DIRECTORY=src/server" dkfbasel/hot-reload-go:1.0.0
+> docker run --rm -ti -p 3001:80 -v "$PWD/../sample:/app" -e "PROJECT=github.com/dkfbasel/hot-reload/sample" -e "DIRECTORY=src/server" dkfbasel/hot-reload-go:1.2.0
 ```
 
 Webpack: The webpack development container will install the node modules specified in
