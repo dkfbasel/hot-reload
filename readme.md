@@ -78,7 +78,7 @@ services:
             - ARGUMENTS=-test=someString
 
     frontend:
-        image: dkfbasel/hot-reload-webpack:1.1.0
+        image: dkfbasel/hot-reload-webpack:2.0.0
         # note that the host port and the port on webpack should
         # match to avoid cross origin request issues
         ports:
