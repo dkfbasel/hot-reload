@@ -1,73 +1,104 @@
 var path = require('path');
 var webpack = require('webpack');
+var poststylus = require('poststylus');
+var autoprefixer = require('autoprefixer');
 
-// define the app directory to include in compilation
-var app_directory = path.resolve(__dirname, 'app');
+// note: we prefer using includes over excludes, as this will give us finer
+// control over what is actually transpiled
+var appDirectory = path.resolve(__dirname, 'app');
+var includes = [appDirectory];
 
 module.exports = {
+	devServer: {
+		historyApiFallback: true,
+		noInfo: true,
+		contentBase: path.resolve(__dirname, 'build'),
+		host: '0.0.0.0',
+		port: 3000
+	},
+	performance: {
+		hints: false
+	},
+	devtool: '#eval-source-map',
 	entry: {
-		public: [path.resolve(__dirname, 'app/main.js')]
+		app: [path.resolve(__dirname, 'app/main.js')]
 	},
 	output: {
-		path: path.resolve(__dirname, './public/assets'),
+		path: path.resolve(__dirname, 'build/assets'),
 		filename: '[name].bundle.js',
 		publicPath: '/assets/'
 	},
-	devtool: 'source-map',
-	devServer: {
-		proxy: {
-			'/api*': {
-				// note that the url to the server is the name
-				// of the service that was set in docker-compose.yml
-				// it is also possible to use networking and aliases
-				target: 'http://api',
-				secure: false
-			}
-		}
-	},
 	module: {
-		loaders: [
+		rules: [
 			{
 				// parse vue components
 				test: /\.vue$/,
-				loader: 'vue',
-				include: [app_directory]
-			}, {
-				// edit this for additional asset file types
-				test: /\.(png|jpg|gif)$/,
-				loader: 'file?name=[name].[ext]?[hash]',
-				include: [app_directory]
+				loader: 'vue-loader',
+				include: includes
 			}, {
 				// parse css styles
 				test: /\.css$/,
-				loader: 'style!css!postcss',
-				include: [app_directory]
+				use: ['style-loader','css-loader','postcss-loader'],
+				include: includes
 			}, {
 				// parse javascript files
 				test: /\.js$/,
-				loader: 'babel',
-				include: [app_directory]
+				loader: 'babel-loader',
+				query: {
+					presets: ['es2015', 'stage-0'],
+					plugins: ['transform-runtime']
+				},
+				include: includes
 			}, {
 				// parse stylus styles
 				test: /\.styl$/,
-				loader: 'style!css!stylus?paths=node_modules/jeet/stylus/',
-				include: [app_directory]
+				use: [
+					{loader: 'style-loader'},
+					{loader: 'css-loader'},
+					{
+						loader:'stylus-loader',
+						options: {
+							ident: 'stylus',
+							use: [
+								poststylus([
+									autoprefixer({
+										browsers: ['iOS >= 6', 'ie >= 9']
+									})
+								])
+							]
+						}
+					}
+				],
+				include: includes
 			}
 		]
-	},
-	vue: {
-		loaders: {
-			stylus: 'style!css!stylus?paths=node_modules/jeet/stylus/',
-			include: [app_directory]
-		}
 	},
 	resolve: {
 		alias: {
 			vue: 'vue/dist/vue.js'
 		}
-	},
-	babel: {
-		presets: ['es2015', 'stage-0'],
-		plugins: ['transform-runtime']
 	}
 };
+
+
+if (process.env.NODE_ENV === 'production') {
+	module.exports.devtool = '#source-map';
+
+	// http://vue-loader.vuejs.org/en/workflow/production.html
+	module.exports.plugins = (module.exports.plugins || []).concat([
+		new webpack.DefinePlugin({
+			'process.env': {
+				NODE_ENV: '"production"'
+			}
+		}),
+		new webpack.optimize.UglifyJsPlugin({
+			sourceMap: true,
+			compress: {
+				warnings: false
+			}
+		}),
+		new webpack.LoaderOptionsPlugin({
+			minimize: true
+		})
+	]);
+}
