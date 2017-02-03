@@ -1,5 +1,5 @@
-Hot-reload development for Go and Vue.js on OS X
-================================================
+Hot-reload development for Go and Vue.js
+========================================
 
 Note: Please be aware, that the statements and utilities provided are very
 opinionated and that you should have some basic understanding on how to use webpack.
@@ -17,8 +17,8 @@ a large number of node modules into every project. This also helps with keeping
 all modules up to date.
 
 
-Prerequisites:
---------------
+Prerequisites (tested):
+-----------------------
 - OS X
 - Docker for Mac
 
@@ -78,7 +78,7 @@ services:
             - ARGUMENTS=-test=someString
 
     frontend:
-        image: dkfbasel/hot-reload-webpack:2.0.0
+        image: dkfbasel/hot-reload-webpack:2.1.0
         # note that the host port and the port on webpack should
         # match to avoid cross origin request issues
         ports:
@@ -154,7 +154,7 @@ for subsequent builds until the command is changed.
 
 > gox -osarch="linux/amd64" -output="hot-reload_linux_amd64" github.com/dkfbasel/hot-reload/webpack/hot-reload
 
-> docker build -t dkfbasel/hot-reload-webpack:2.0.0 .
+> docker build -t dkfbasel/hot-reload-webpack:2.1.0 .
 
 > docker run --rm -ti -p 3000:3000 -v "$PWD/../sample:/app" -e "DIRECTORY=src/web" -e "COMMAND=npm run dev" dkfbasel/hot-reload-webpack:2.0.0
 
