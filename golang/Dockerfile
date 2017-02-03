@@ -13,6 +13,7 @@ COPY hot-reload_linux_amd64 /bin/hot-reload
 # ADD ROOT CERTIFICATE PROVIDERS FOR SSL CONNECTIONS
 COPY ca-certificates.crt /etc/ssl/certs/ca-certificates.crt
 
+
 # THE PROJECT TO WATCH SHOULD BE CONNECTED ON THE /APP VOLUME
 VOLUME ["/app"]
 
