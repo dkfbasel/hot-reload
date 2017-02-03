@@ -146,16 +146,18 @@ currently not seem to be possible to run webpack from the global directory.
 
 To build the webpack development container make sure the webpack/Dockerfile contains
 all node modules you wish to use for your project and follow the steps bellow.
-Please be aware that the docker build command will cache individual RUN commands
-for subsequent builds until the command is changed.
+
+The node modules are copied from the webpack node_modules directory. This allows
+to easily check for outdated packages with yarn. Note that it is recommended,
+to only include the devDependencies in the webpack container.
 
 ```
 > cd webpack
 
 > gox -osarch="linux/amd64" -output="hot-reload_linux_amd64" github.com/dkfbasel/hot-reload/webpack/hot-reload
 
-> docker build -t dkfbasel/hot-reload-webpack:2.1.0 .
+> docker build -t dkfbasel/hot-reload-webpack:2.2.0 .
 
-> docker run --rm -ti -p 3000:3000 -v "$PWD/../sample:/app" -e "DIRECTORY=src/web" -e "COMMAND=npm run dev" dkfbasel/hot-reload-webpack:2.0.0
+> docker run --rm -ti -p 3000:3000 -v "$PWD/../sample:/app" -e "DIRECTORY=src/web" -e "COMMAND=npm run dev" dkfbasel/hot-reload-webpack:2.2.0
 
 ```
