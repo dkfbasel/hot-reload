@@ -4,14 +4,11 @@ FROM golang:1.6-alpine
 MAINTAINER Ramon Saccilotto <ramon.saccilotto@usb.ch>
 LABEL copyright="Departement Klinische Forschung, Basel, Switzerland. 2015"
 
-# ADD A BASH SHELL
-RUN apk add --update bash && rm -rf /var/cache/apk/*
+# ADD ROOT CERTIFICATE PROVIDERS FOR SSL CONNECTIONS
+RUN apk add --no-cache ca-certificates
 
 # COPY THE HOT RELOAD UTILITY INTO THE BIN DIRECTORY
 COPY hot-reload_linux_amd64 /bin/hot-reload
-
-# ADD ROOT CERTIFICATE PROVIDERS FOR SSL CONNECTIONS
-COPY ca-certificates.crt /etc/ssl/certs/ca-certificates.crt
 
 
 # THE PROJECT TO WATCH SHOULD BE CONNECTED ON THE /APP VOLUME
