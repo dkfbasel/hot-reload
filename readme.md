@@ -30,16 +30,25 @@ For building the hot-reload utilities
 Usage
 -----------------
 We generally use the following application structure for our projects and you can
-find a sample setup in the folder `sample`:
+find a scratch project setup using the hot-reload-containers at
+https://github.com/dkfbasel/scratch
 
 ```
 - build         // contains all information required to run the project in production
+    - bin       // contains all binaries to run the service
+    - public    // contains all files that should be served by the service
+    - templates // contains all templates required for the service
+
+- docs          // documentation and asset source files for the project
+
 - src           // contains all development information
-    - server    // contains the golang code for the web server
-    - web       // contains the web application front-end source code
+    - backend   // contains the golang code for the web server
+    - frontend  // contains the web application front-end source code
     - ..        // additional directories for other go packages
     - docker-compose.yml    // configuration for development containers
-- documentation // documentation and asset source files for the project
+
+- test          // directory for separate test data and integration tests
+
 - readme.md     // readme file for every project
 ```
 
@@ -78,7 +87,7 @@ services:
             - ARGUMENTS=-test=someString
 
     frontend:
-        image: dkfbasel/hot-reload-webpack:2.1.0
+        image: dkfbasel/hot-reload-webpack:3.0.0
         # note that the host port and the port on webpack should
         # match to avoid cross origin request issues
         ports:
@@ -98,10 +107,11 @@ services:
 It will load the development images specified, which allows for versioning
 of the containers, starts up all containers and start the hot-reload development.
 
-Please note that we usually employ additional services in other docker containers, such as a db container, and connect all services through a network.
+Please note that we usually employ additional services in other docker containers,
+such as a db container, and connect all services through a network.
 
 All external golang packages should be vendored in the vendor directory. The
-container will not attempt to install any go packages, this will ensure full
+container will not attempt to install any go packages. This will ensure full
 control of the versioning for the developer and avoid the necessity of having
 a working internet connection.
 
@@ -116,15 +126,16 @@ TODO:
 - [x] Enable build mode for webpack
 - [x] Start services with a simple docker-compose up command
 
-- [ ] Roadmap: Allow connection to a cluster of services on a test server (to avoid the need of starting other micro and db services on the local machine)
+- [ ] Roadmap: Allow connection to a cluster of services on a test server
+(to avoid the need of starting other micro and db services on the local machine)
 
 
 Building containers
 -------------------
 
 Go: The golang development container will symlink the go package into the directory
-specified and watch for changes making use of inotify. Newly added directories
-will be added to the watchlist and deleted directories will be removed.
+specified and watch for changes. Newly added directories will be added to the
+watchlist and deleted directories will be removed.
 
 To use it, you should create a corresponding docker container using the
 following commands
