@@ -63,12 +63,12 @@ docker-compose up
 docker-compose.yml
 ------------------
 
-version: '2'
+version: '3'
 
 services:
 
     api:
-        image: dkfbasel/hot-reload-go:1.2.0
+        image: dkfbasel/hot-reload-go:1.8.0
         ports:
             - "3001:80"
         volumes:
@@ -87,7 +87,7 @@ services:
             - ARGUMENTS=-test=someString
 
     frontend:
-        image: dkfbasel/hot-reload-webpack:3.0.0
+        image: dkfbasel/hot-reload-webpack:3.1.0
         # note that the host port and the port on webpack should
         # match to avoid cross origin request issues
         ports:
@@ -145,9 +145,9 @@ following commands
 
 > gox -osarch="linux/amd64" -output="hot-reload_linux_amd64" github.com/dkfbasel/hot-reload/golang/hot-reload
 
-> docker build -t dkfbasel/hot-reload-go:1.2.0 .
+> docker build -t dkfbasel/hot-reload-go:1.8.0 .
 
-> docker run --rm -ti -p 3001:80 -v "$PWD/../sample:/app" -e "PROJECT=github.com/dkfbasel/hot-reload/sample" -e "DIRECTORY=src/server" dkfbasel/hot-reload-go:1.2.0
+> docker run --rm -ti -p 3001:80 -v "$PWD/../sample:/app" -e "PROJECT=github.com/dkfbasel/hot-reload/sample" -e "DIRECTORY=src/server" dkfbasel/hot-reload-go:1.8.0
 ```
 
 Webpack: The webpack development container will install the node modules specified in
@@ -167,7 +167,7 @@ to only include the devDependencies in the webpack container.
 
 > gox -osarch="linux/amd64" -output="hot-reload_linux_amd64" github.com/dkfbasel/hot-reload/webpack/hot-reload
 
-> docker build -t dkfbasel/hot-reload-webpack:2.2.0 .
+> docker build -t dkfbasel/hot-reload-webpack:3.1.0 .
 
 > docker run --rm -ti -p 3000:3000 -v "$PWD/../sample:/app" -e "DIRECTORY=src/web" -e "COMMAND=npm run dev" dkfbasel/hot-reload-webpack:2.2.0
 
