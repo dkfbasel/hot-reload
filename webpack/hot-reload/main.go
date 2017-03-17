@@ -129,18 +129,10 @@ func symlinkGlobalNodeModules(directory string) error {
 		fmt.Println("Error reading global node directory:\n", err)
 	}
 
+	// go through all directories in the global node module path
 	for _, item := range content {
-		// symlink the global node modules into the directory
-		symlink := exec.Command("ln", "-s", "-f", globalNodePath+"/"+item.Name(), nodeModules)
-
-		// redirect all output to the standard console
-		symlink.Stdout = os.Stdout
-		symlink.Stderr = os.Stderr
-
-		err := symlink.Run()
-		if err != nil {
-			fmt.Printf("Could not symlink %s.\n%s", item.Name(), err)
-		}
+		// check if the module exists already before symlinking
+		_ = os.Symlink(globalNodePath+"/"+item.Name(), nodeModules+"/"+item.Name())
 	}
 
 	return nil
