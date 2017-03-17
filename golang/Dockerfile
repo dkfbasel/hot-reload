@@ -1,5 +1,5 @@
 # START WITH THE GOLANG ALPINE PACKAGE
-FROM golang:1.6-alpine
+FROM golang:1.8-alpine
 
 MAINTAINER Ramon Saccilotto <ramon.saccilotto@usb.ch>
 LABEL copyright="Departement Klinische Forschung, Basel, Switzerland. 2015"
