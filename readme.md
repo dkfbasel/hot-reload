@@ -90,11 +90,13 @@ services:
             # specify the command that should be run, can be 'build', 'test' or
             # 'goconvey'. please note, that for goconvey to work the package
             # directory should not be mounted in /app but in /go/src/[PROJECTPATH]
+            - CMD=build
+            # on running
+            - ARGUMENTS=-test=someString
             # ignore will indicate which directories to ignore from watching
             - IGNORE=/src/web
             # arguments can be used to specify arguments to pass to the executable
-            # on running
-            - ARGUMENTS=-test=someString
+
 
     frontend:
         image: dkfbasel/hot-reload-webpack:3.1.0
