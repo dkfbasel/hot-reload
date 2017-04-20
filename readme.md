@@ -91,13 +91,13 @@ services:
             # 'goconvey'. please note, that for goconvey to work the package
             # directory should not be mounted in /app but in /go/src/[PROJECTPATH]
             - CMD=build
+            # arguments can be used to specify arguments to pass to the executable
             # on running
             - ARGUMENTS=-test=someString
             # ignore will indicate which directories to ignore from watching
             - IGNORE=/src/web
-            # arguments can be used to specify arguments to pass to the executable
-
-
+            
+            
     frontend:
         image: dkfbasel/hot-reload-webpack:3.1.0
         # note that the host port and the port on webpack should
