@@ -30,7 +30,7 @@ func restartPackage(packagePath string, executable string, arguments []string) {
 		testRunner.Stderr = os.Stderr
 
 		// run the program
-		err := testRunner.Start()
+		err := testRunner.Run()
 		if err != nil {
 			fmt.Fprintln(os.Stderr, "ERROR: could not run go test", err)
 		}

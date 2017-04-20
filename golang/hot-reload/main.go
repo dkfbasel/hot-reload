@@ -37,11 +37,11 @@ func main() {
 
 	// check if package directory exists. if not, create a symlink from the /app
 	// directory. note: this will not work with goconvey (goconvey cannot follow symlinks)
-	if _, err := os.Stat("/go/src" + config.ProjectPath); os.IsNotExist(err) {
+	if _, err := os.Stat("/go/src/" + config.ProjectPath); os.IsNotExist(err) {
 		createSymlinkForPackage(config)
 	} else {
 		// watch the package directory directly
-		directoryToWatch = "/go/src" + config.ProjectPath
+		directoryToWatch = "/go/src/" + config.ProjectPath
 	}
 
 	switch config.Command {
