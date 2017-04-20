@@ -68,18 +68,28 @@ version: '3'
 services:
 
     api:
-        image: dkfbasel/hot-reload-go:1.8.0
+        image: dkfbasel/hot-reload-go:1.8.1
         ports:
             - "3001:80"
+            # goconvey is exposed on port 8080
+            - "3002:8080"
         volumes:
+            # mount the project into the docker container. Please note, that the
+            # app directory is symlinked into the project path specified as
+            # environment variable. For goconvey to work, the package must be
+            # linked directly into the the package directory i.e. /go/src/[PROJECTPATH]
             - ..:/app
         environment:
             # project is required to make sure that the import paths to
             # optional other packages in the same directory will work as expected
             - PROJECT=github.com/dkfbasel/hot-reload/sample
             # directory is required to set the current directory that should be
-            # used for building
+            # used for building, it can be omitted if it is the same directory
+            # as the project
             - DIRECTORY=src/server
+            # specify the command that should be run, can be 'build', 'test' or
+            # 'goconvey'. please note, that for goconvey to work the package
+            # directory should not be mounted in /app but in /go/src/[PROJECTPATH]
             # ignore will indicate which directories to ignore from watching
             - IGNORE=/src/web
             # arguments can be used to specify arguments to pass to the executable
@@ -126,6 +136,10 @@ TODO:
 - [x] Enable build mode for webpack
 - [x] Start services with a simple docker-compose up command
 
+- [x] Enable testing mode for go code
+- [x] Support goconvey for testing go code
+
+- [ ] Roadmap: Improve goconvey support (or use a custom test web ui)
 - [ ] Roadmap: Allow connection to a cluster of services on a test server
 (to avoid the need of starting other micro and db services on the local machine)
 

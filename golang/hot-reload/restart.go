@@ -9,7 +9,35 @@ import (
 )
 
 // restartPackage will rebuild the given package and restart the process
-func restartPackage(packagePath string, arguments []string) {
+func restartPackage(packagePath string, executable string, arguments []string) {
+
+	if executable == "go test" {
+
+		fmt.Println("")
+		log.Println("TESTING\n----------------------------")
+
+		// append test to all other arguments
+		arguments = append([]string{"test"}, arguments...)
+
+		// start the go test
+		testRunner := exec.Command("go", arguments...)
+
+		// set the current directory to the packagePath
+		os.Chdir("/go/src/" + packagePath) // nolint: errcheck
+
+		// redirect all output to the standard console
+		testRunner.Stdout = os.Stdout
+		testRunner.Stderr = os.Stderr
+
+		// run the program
+		err := testRunner.Start()
+		if err != nil {
+			fmt.Fprintln(os.Stderr, "ERROR: could not run go test", err)
+		}
+
+		return
+
+	}
 
 	fmt.Println("")
 	log.Println("BUILDING\n----------------------------")
@@ -28,9 +56,6 @@ func restartPackage(packagePath string, arguments []string) {
 		return
 	}
 
-	// get the package name to run the package
-	executable := getExecutableName(packagePath)
-
 	// stop all previous running instances of the project
 	kill := exec.Command("pkill", "-x", executable)
 
@@ -46,7 +71,7 @@ func restartPackage(packagePath string, arguments []string) {
 	runner := exec.Command(executable, arguments...)
 
 	// set the current directory to the packagePath
-	os.Chdir("/go/src/" + packagePath)
+	os.Chdir("/go/src/" + packagePath) // nolint: errcheck
 
 	// redirect all output to the standard console
 	runner.Stdout = os.Stdout

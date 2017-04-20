@@ -3,31 +3,45 @@ package main
 import (
 	"log"
 	"os"
+	"path"
 	"path/filepath"
 	"strings"
 
 	"github.com/fsnotify/fsnotify"
 )
 
+type cmd string
+
+const test cmd = "test"
+const build cmd = "build"
+
 // watchForChanges will watch the /app volume for changes and rebuild the
 // package as soon as changes occur
-func watchForChanges(config Config) {
+func watchForChanges(command cmd, directory string, config Config) {
 
 	packagePath := config.ProjectPath + config.Directory
 
+	// get the package name to run the package
+	executable := getExecutableName(packagePath)
+
+	// use go test for testing
+	if command == test {
+		executable = "go test"
+	}
+
 	// rebuild and start the package
-	restartPackage(packagePath, config.Arguments)
+	restartPackage(packagePath, executable, config.Arguments)
 
 	// create a new file watcher utilizing inotify
 	watcher, err := fsnotify.NewWatcher()
 	if err != nil {
 		log.Fatalln("Error while watching for changes: %s\n", err)
 	}
-	defer watcher.Close()
+	defer watcher.Close() // nolint: errcheck
 
 	// set the watcher path on the volume directly as symlinks are not followed
 	// by inotify
-	err = filepath.Walk("/app", initWatchlist(watcher, config.Ignore))
+	err = filepath.Walk(directory, initWatchlist(watcher, directory, config.Ignore))
 	if err != nil {
 		log.Fatalln(err)
 	}
@@ -41,7 +55,7 @@ func watchForChanges(config Config) {
 				// ev.Mask & inotify.IN_MODIFY) == inotify.IN_MODIFY
 
 				// rebuild and restart the package
-				go restartPackage(packagePath, config.Arguments)
+				go restartPackage(packagePath, executable, config.Arguments)
 
 			} else if event.Op&fsnotify.Create == fsnotify.Create {
 				// if (ev.Mask & inotify.IN_CREATE) == inotify.IN_CREATE
@@ -50,7 +64,7 @@ func watchForChanges(config Config) {
 				addWatch(watcher, event.Name)
 
 				// rebuild and restart the package
-				go restartPackage(packagePath, config.Arguments)
+				go restartPackage(packagePath, executable, config.Arguments)
 
 			} else if event.Op&fsnotify.Remove == fsnotify.Remove {
 				// (ev.Mask & inotify.IN_DELETE) == inotify.IN_DELETE
@@ -59,7 +73,7 @@ func watchForChanges(config Config) {
 				removeWatch(watcher, event.Name)
 
 				// rebuild and restart the package
-				go restartPackage(packagePath, config.Arguments)
+				go restartPackage(packagePath, executable, config.Arguments)
 
 			}
 
@@ -71,7 +85,7 @@ func watchForChanges(config Config) {
 }
 
 // initWatchlist will return a function to watch all subdirectories of the given path
-func initWatchlist(watcher *fsnotify.Watcher, ignore []string) filepath.WalkFunc {
+func initWatchlist(watcher *fsnotify.Watcher, directory string, ignore []string) filepath.WalkFunc {
 
 	// skip some directories by default (i.e. vendor and versioning)
 	excludeDirs := []string{"/vendor", "/node_modules", ".git", ".svn"}
@@ -79,7 +93,7 @@ func initWatchlist(watcher *fsnotify.Watcher, ignore []string) filepath.WalkFunc
 	// prefix all ignored directory with /app to create an absolute path
 	ignorePaths := make([]string, len(ignore))
 	for index, value := range ignore {
-		ignorePaths[index] = "/app/" + value
+		ignorePaths[index] = path.Join(directory, value)
 	}
 
 	// go through all directories
@@ -100,7 +114,7 @@ func initWatchlist(watcher *fsnotify.Watcher, ignore []string) filepath.WalkFunc
 		}
 
 		// watch all other directories
-		watcher.Add(path)
+		watcher.Add(path) // nolint: errcheck
 
 		return err
 	}
@@ -113,7 +127,7 @@ func addWatch(watcher *fsnotify.Watcher, path string) {
 
 	info, _ := os.Stat(path)
 	if info.IsDir() {
-		watcher.Add(path)
+		watcher.Add(path) // nolint: errcheck
 	}
 
 }
@@ -123,7 +137,7 @@ func removeWatch(watcher *fsnotify.Watcher, path string) {
 
 	// note: this will return an error if the watch does not exist, but we
 	// do not need to care about that
-	watcher.Remove(path)
+	watcher.Remove(path) // nolint: errcheck
 }
 
 // containsAny will check whether any of the matches is part of the given string

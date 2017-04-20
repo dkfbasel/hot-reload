@@ -1,22 +1,13 @@
 package main
 
 import (
-	"flag"
 	"fmt"
 	"os"
 	"strings"
 )
 
-// define a temporary project path for projects with only one directory
-const tmpProjectPath = "development.com/tmp"
-
-// Config will contain all flags than can
-type Config struct {
-	ProjectPath string   // the base path to the project
-	Directory   string   // the subdirectory containing the current package
-	Ignore      []string // directories to ignore when watching for changes
-	Arguments   []string // arguments to pass to the service
-}
+// default directory to watch is the /app directory
+var directoryToWatch = "/app"
 
 func main() {
 
@@ -41,76 +32,41 @@ func main() {
 	}
 
 	if config.ProjectPath == tmpProjectPath {
-		fmt.Printf("please note that import paths in the project directory will probably not work as intended")
+		fmt.Println("please note that import paths in the project directory will probably not work as intended")
 	}
 
-	// create a symlink for the package to allow for compilation
-	createSymlinkForPackage(config)
-
-	// watch the supplied directory for changes and rebuild and rerun the package
-	watchForChanges(config)
-
-}
-
-// parseConfiguration will parse the necessary external information from the command line
-// or the environment and return an error if the flag is not defined
-func parseConfiguration() Config {
-
-	// the package import path should be supplied via flag or environment variable
-	config := Config{}
-
-	// initialize a string for our ignore values
-	var ignore string
-	var arguments string
-
-	// parse additional information from the command line
-	flag.StringVar(&config.ProjectPath, "project", "", "the path of the project relative to the go source directory")
-	flag.StringVar(&config.Directory, "directory", "", "(optional) relative path to the directory of the current go package to watch")
-	flag.StringVar(&ignore, "ignore", "", "(optional) directories to ignore when watching for changes")
-	flag.StringVar(&arguments, "args", "", "(optional) arguments to pass to the service on start")
-	flag.Parse()
-
-	// try to parse the data from the environment if not supplied via flag
-	if config.ProjectPath == "" {
-		config.ProjectPath = os.Getenv("PROJECT")
+	// check if package directory exists. if not, create a symlink from the /app
+	// directory. note: this will not work with goconvey (goconvey cannot follow symlinks)
+	if _, err := os.Stat("/go/src" + config.ProjectPath); os.IsNotExist(err) {
+		createSymlinkForPackage(config)
+	} else {
+		// watch the package directory directly
+		directoryToWatch = "/go/src" + config.ProjectPath
 	}
 
-	if config.Directory == "" {
-		config.Directory = os.Getenv("DIRECTORY")
-	}
+	switch config.Command {
+	case "build":
+		// watch the supplied directory for changes and rebuild and rerun the package
+		watchForChanges(build, directoryToWatch, config)
 
-	if ignore == "" {
-		ignore = os.Getenv("IGNORE")
-	}
+	case "test":
+		// watch the supplied directory for changes and test with go test
+		watchForChanges(test, directoryToWatch, config)
 
-	if arguments == "" {
-		arguments = os.Getenv("ARGUMENTS")
-	}
-
-	// set the project path to tmp if not specified -> this will break package
-	// imports that are contained in the same project directory
-	if config.ProjectPath == "" {
-		config.ProjectPath = tmpProjectPath
-	}
-
-	// ensure that the subdirectory starts with a slash
-	if config.Directory != "" && strings.HasPrefix(config.Directory, "/") == false {
-		config.Directory = "/" + config.Directory
-	}
-
-	if ignore != "" {
-		config.Ignore = strings.Split(ignore, ",")
-
-		for index, value := range config.Ignore {
-			value = strings.TrimSpace(value)
-			config.Ignore[index] = strings.TrimLeft(value, "/")
+	case "goconvey":
+		// inform user that ignore directories must currently be specified differently
+		if len(config.Ignore) > 0 {
+			fmt.Println("please use the argument -excludeDirs from goconvey to exclude directories")
 		}
-	}
 
-	if arguments != "" {
-		config.Arguments = strings.Split(arguments, " ")
-	}
+		// start goconvey (will watch directories automatically)
+		runGoconvey(config.ProjectPath, config.Arguments)
 
-	return config
+	case "noop":
+		fmt.Println("please log into the container to run any commands")
+
+	default:
+		fmt.Printf("the command '%s' is not defined. please use build, goconvey or test", config.Command)
+	}
 
 }
