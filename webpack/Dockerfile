@@ -1,5 +1,5 @@
 # START WITH THE NODE CONTAINER
-FROM node:7
+FROM node:8
 
 MAINTAINER Ramon Saccilotto <ramon.saccilotto@usb.ch>
 LABEL copyright="Departement Klinische Forschung, Basel, Switzerland. 2015"
