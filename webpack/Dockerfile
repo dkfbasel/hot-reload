@@ -4,14 +4,16 @@ FROM node:8
 MAINTAINER Ramon Saccilotto <ramon.saccilotto@usb.ch>
 LABEL copyright="Departement Klinische Forschung, Basel, Switzerland. 2015"
 
-# ADD THE NODE-MODULES FROM THE BUILD DIRECTORY
+# ADD THE NODE-MODULES FROM THE BUILD DIRECTORY TO THE GLOBAL YARN DIRECTORY
 COPY node_modules /usr/local/lib/node_modules
 
-# COPY THE HOT RELOAD UTILITY INTO THE BIN DIRECTORY
-COPY hot-reload_linux_amd64 /bin/hot-reload
+# NOTE: we might later switch to yarn using the yarn global node module path
+# COPY node_modules /usr/local/share/.config/yarn/global/node_modules
 
+# COPY THE HOT RELOAD UTILITY INTO THE BIN DIRECTORY
 # THIS WILL SYMLINK THE GLOBAL NODE-MODULES INTO OUR WEB DIRECTORY
 # ln -f -s /usr/local/lib/node_modules/* /app/web/node_modules/
+COPY hot-reload_linux_amd64 /bin/hot-reload
 
 # MOUNT THE APPLICATION IN THE APP DIRECTORY
 VOLUME ["/app"]

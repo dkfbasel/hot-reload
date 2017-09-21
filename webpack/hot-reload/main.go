@@ -120,7 +120,7 @@ func symlinkGlobalNodeModules(directory string) error {
 	// check if a node directory exists in the same directory
 	// or create if necessary
 	if _, err := os.Stat(nodeModules); os.IsNotExist(err) {
-		os.Mkdir(nodeModules, 0777)
+		os.Mkdir(nodeModules, 0777) // nolint: errcheck
 	}
 
 	// get all directories in the global node module directory
@@ -131,8 +131,15 @@ func symlinkGlobalNodeModules(directory string) error {
 
 	// go through all directories in the global node module path
 	for _, item := range content {
+
 		// check if the module exists already before symlinking
-		_ = os.Symlink(globalNodePath+"/"+item.Name(), nodeModules+"/"+item.Name())
+		_, err := os.Stat(filepath.Join(nodeModules, item.Name()))
+
+		if os.IsNotExist(err) {
+			// symlink the module
+			_ = os.Symlink(filepath.Join(globalNodePath, item.Name()), filepath.Join(nodeModules, item.Name()))
+		}
+
 	}
 
 	return nil
@@ -161,7 +168,7 @@ func runCommand(directory string, command string) error {
 	}
 
 	// set the current directory to the webpack directory
-	os.Chdir(directory)
+	os.Chdir(directory) // nolint: errcheck
 
 	// redirect all output to the standard console
 	webpack.Stdout = os.Stdout
