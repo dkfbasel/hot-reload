@@ -45,13 +45,9 @@ func main() {
 	}
 
 	switch config.Command {
-	case "build":
+	case "build", "test":
 		// watch the supplied directory for changes and rebuild and rerun the package
-		watchForChanges(build, directoryToWatch, config)
-
-	case "test":
-		// watch the supplied directory for changes and test with go test
-		watchForChanges(test, directoryToWatch, config)
+		watchForChanges(config.Command, directoryToWatch, config)
 
 	case "goconvey":
 		// inform user that ignore directories must currently be specified differently

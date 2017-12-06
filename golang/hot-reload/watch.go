@@ -10,14 +10,16 @@ import (
 	"github.com/fsnotify/fsnotify"
 )
 
-type cmd string
-
-const test cmd = "test"
-const build cmd = "build"
+// getExecutableName will get the last part of the package path that is used
+// to name the go executable
+func getExecutableName(packagePath string) string {
+	parts := strings.Split(packagePath, "/")
+	return parts[len(parts)-1]
+}
 
 // watchForChanges will watch the /app volume for changes and rebuild the
 // package as soon as changes occur
-func watchForChanges(command cmd, directory string, config Config) {
+func watchForChanges(command string, directory string, config Config) {
 
 	packagePath := config.ProjectPath + config.Directory
 
@@ -25,12 +27,12 @@ func watchForChanges(command cmd, directory string, config Config) {
 	executable := getExecutableName(packagePath)
 
 	// use go test for testing
-	if command == test {
+	if command == "test" {
 		executable = "go test"
 	}
 
-	// rebuild and start the package
-	restartPackage(packagePath, executable, config.Arguments)
+	// initialize a change handler to react to changes
+	changeHandler := initHandler(packagePath, executable, config.Arguments)
 
 	// create a new file watcher utilizing inotify
 	watcher, err := fsnotify.NewWatcher()
@@ -55,7 +57,7 @@ func watchForChanges(command cmd, directory string, config Config) {
 				// ev.Mask & inotify.IN_MODIFY) == inotify.IN_MODIFY
 
 				// rebuild and restart the package
-				go restartPackage(packagePath, executable, config.Arguments)
+				changeHandler.notifications <- true
 
 			} else if event.Op&fsnotify.Create == fsnotify.Create {
 				// if (ev.Mask & inotify.IN_CREATE) == inotify.IN_CREATE
@@ -64,7 +66,7 @@ func watchForChanges(command cmd, directory string, config Config) {
 				addWatch(watcher, event.Name)
 
 				// rebuild and restart the package
-				go restartPackage(packagePath, executable, config.Arguments)
+				changeHandler.notifications <- true
 
 			} else if event.Op&fsnotify.Remove == fsnotify.Remove {
 				// (ev.Mask & inotify.IN_DELETE) == inotify.IN_DELETE
@@ -73,7 +75,7 @@ func watchForChanges(command cmd, directory string, config Config) {
 				removeWatch(watcher, event.Name)
 
 				// rebuild and restart the package
-				go restartPackage(packagePath, executable, config.Arguments)
+				changeHandler.notifications <- true
 
 			}
 
@@ -125,7 +127,11 @@ func initWatchlist(watcher *fsnotify.Watcher, directory string, ignore []string)
 // watchlist
 func addWatch(watcher *fsnotify.Watcher, path string) {
 
-	info, _ := os.Stat(path)
+	info, err := os.Stat(path)
+	if err != nil {
+		return
+	}
+
 	if info.IsDir() {
 		watcher.Add(path) // nolint: errcheck
 	}

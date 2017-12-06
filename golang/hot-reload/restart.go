@@ -5,25 +5,26 @@ import (
 	"log"
 	"os"
 	"os/exec"
-	"strings"
 )
 
 // restartPackage will rebuild the given package and restart the process
-func restartPackage(packagePath string, executable string, arguments []string) {
+func (h *Handler) restartPackage() {
 
-	if executable == "go test" {
+	var arguments []string
+
+	if h.executable == "go test" {
 
 		fmt.Println("")
 		log.Println("TESTING\n----------------------------")
 
 		// append test to all other arguments
-		arguments = append([]string{"test"}, arguments...)
+		arguments = append([]string{"test"}, h.arguments...)
 
 		// start the go test
-		testRunner := exec.Command("go", arguments...)
+		testRunner := exec.Command("go", h.arguments...)
 
 		// set the current directory to the packagePath
-		os.Chdir("/go/src/" + packagePath) // nolint: errcheck
+		os.Chdir("/go/src/" + h.packagePath) // nolint: errcheck
 
 		// redirect all output to the standard console
 		testRunner.Stdout = os.Stdout
@@ -43,7 +44,7 @@ func restartPackage(packagePath string, executable string, arguments []string) {
 	log.Println("BUILDING\n----------------------------")
 
 	// build and install the package
-	builder := exec.Command("go", "install", packagePath)
+	builder := exec.Command("go", "install", h.packagePath)
 
 	// redirect all output to the standard console
 	builder.Stdout = os.Stdout
@@ -57,7 +58,7 @@ func restartPackage(packagePath string, executable string, arguments []string) {
 	}
 
 	// stop all previous running instances of the project
-	kill := exec.Command("pkill", "-x", executable)
+	kill := exec.Command("pkill", "-x", h.executable)
 
 	// redirect all output to the standard console
 	kill.Stdout = os.Stdout
@@ -68,10 +69,10 @@ func restartPackage(packagePath string, executable string, arguments []string) {
 	_ = kill.Run()
 
 	// start the go executable
-	runner := exec.Command(executable, arguments...)
+	runner := exec.Command(h.executable, arguments...)
 
 	// set the current directory to the packagePath
-	os.Chdir("/go/src/" + packagePath) // nolint: errcheck
+	os.Chdir("/go/src/" + h.packagePath) // nolint: errcheck
 
 	// redirect all output to the standard console
 	runner.Stdout = os.Stdout
@@ -83,11 +84,4 @@ func restartPackage(packagePath string, executable string, arguments []string) {
 		fmt.Fprintln(os.Stderr, "ERROR: could not run the package", err)
 	}
 
-}
-
-// getExecutableName will get the last part of the package path that is used
-// to name the go executable
-func getExecutableName(packagePath string) string {
-	parts := strings.Split(packagePath, "/")
-	return parts[len(parts)-1]
 }
