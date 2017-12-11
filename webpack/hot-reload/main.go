@@ -51,15 +51,8 @@ func main() {
 	fmt.Printf("DIRECTORY:  %s\n", directory)
 	fmt.Printf("COMMAND:    %s\n", command)
 
-	// link the global node modules into the local directory
-	err := symlinkGlobalNodeModules(directory)
-	if err != nil {
-		fmt.Println("could not symlink the global node modules:", err)
-		return
-	}
-
 	// start webpack with the command supplied
-	err = runCommand(directory, command)
+	err := runCommand(directory, command)
 	if err != nil {
 		fmt.Println("could run the command supplied:", err)
 		return
