@@ -21,7 +21,7 @@ func (h *Handler) restartPackage() {
 		arguments = append([]string{"test"}, h.arguments...)
 
 		// start the go test
-		testRunner := exec.Command("go", h.arguments...)
+		testRunner := exec.Command("go", arguments...)
 
 		// set the current directory to the packagePath
 		os.Chdir("/go/src/" + h.packagePath) // nolint: errcheck
