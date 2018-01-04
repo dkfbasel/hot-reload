@@ -15,6 +15,10 @@ RUN apk update && apk upgrade && \
 # INSTALL GRCP PACKAGE FOR GRPC-SERVICES
 RUN go get -u google.golang.org/grpc
 
+# GRPC PACKAGE CURRENTLY SPECIFIES THE GOLANG-CONTEXT PACKAGE INSTEAD OF USING
+# CONTEXT PACKAGE FROM THE STANDARD LIBRARY
+RUN go get -u golang.org/x/net/context
+
 # INSTALL THE PROTOBUF LIBRARY
 RUN go get -u github.com/golang/protobuf/proto
 
