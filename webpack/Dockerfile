@@ -11,9 +11,7 @@ COPY node_modules /usr/local/lib/node_modules
 # COPY node_modules /usr/local/share/.config/yarn/global/node_modules
 
 # COPY THE HOT RELOAD UTILITY INTO THE BIN DIRECTORY
-# THIS WILL SYMLINK THE GLOBAL NODE-MODULES INTO OUR WEB DIRECTORY
-# ln -f -s /usr/local/lib/node_modules/* /app/web/node_modules/
-COPY hot-reload_linux_amd64 /bin/hot-reload
+COPY hot-reload/hot-reload_linux_amd64 /bin/hot-reload
 
 # MOUNT THE APPLICATION IN THE APP DIRECTORY
 VOLUME ["/app"]
