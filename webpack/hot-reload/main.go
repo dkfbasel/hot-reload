@@ -132,6 +132,36 @@ func symlinkGlobalNodeModules(directory string) error {
 	// go through all directories in the global node module path
 	for _, item := range content {
 
+		// copy all items in the binary directory to the local binary directory
+		if item.Name() == ".bin" {
+			fmt.Println("bin directory found")
+
+			binaryLinks, err := ioutil.ReadDir(filepath.Join(globalNodePath, ".bin"))
+			if err != nil {
+				fmt.Println("Error reading global node .bin directory:\n", err)
+			}
+			for _, binary := range binaryLinks {
+
+				// check if the module exists already before symlinking
+				_, err := os.Lstat(filepath.Join(nodeModules, ".bin", binary.Name()))
+
+				if os.IsNotExist(err) {
+
+					err = os.Symlink(
+						filepath.Join(globalNodePath, ".bin", binary.Name()),
+						filepath.Join(nodeModules, ".bin", binary.Name()),
+					)
+
+					if err != nil {
+						fmt.Printf("Could not copy binary file from: %s\n", binary.Name())
+					}
+				}
+
+			}
+
+			continue
+		}
+
 		// check if the module exists already before symlinking
 		_, err := os.Stat(filepath.Join(nodeModules, item.Name()))
 

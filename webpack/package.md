@@ -71,6 +71,10 @@ https://github.com/webpack-contrib/file-loader
 Postcss loader for webpack. Postcss is required to enable autoprefixer.
 https://github.com/postcss/postcss-loader
 
+## poststylus
+Enable autoprefixer with stylus preprocessor.
+
+
 ## style-loader
 Add css to the DOM by injecting a style tag. Required to write styles in single
 file components and extract styles with extract-text-webpack-plugin.
