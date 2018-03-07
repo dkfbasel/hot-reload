@@ -26,7 +26,8 @@ Minify javascript that was transpiled with babel
 https://github.com/babel/minify
 
 ## babel-preset-env
-A Babel preset that compiles ES2015+ down to ES5 by automatically determining the Babel plugins and polyfills you need based on your targeted browser or runtime environments
+A Babel preset that compiles ES2015+ down to ES5 by automatically determining the Babel
+plugins and polyfills you need based on your targeted browser or runtime environments
 https://github.com/babel/babel/tree/master/packages/babel-preset-env
 
 ## babel-preset-stage-0
@@ -38,16 +39,16 @@ Externalise references to helpers and builtins, automatically polyfilling your
 code without polluting globals. Use with babel-plugin-transform-runtime.
 https://babeljs.io/docs/plugins/transform-runtime/
 
-## buble
+## buble (currently not included)
 Fast es2015 compiler. Use as replacement for babel.
 https://www.npmjs.com/package/vue-template-loader
 
-## buble-loader
+## buble-loader (currently not included)
 Use buble with webpack.
 https://github.com/sairion/buble-loader
 
 ## css-nano
-Minify css.
+Minify css files.
 http://cssnano.co
 
 ## css-loader
@@ -73,7 +74,7 @@ https://github.com/postcss/postcss-loader
 
 ## poststylus
 Enable autoprefixer with stylus preprocessor.
-
+https://github.com/seaneking/poststylus
 
 ## style-loader
 Add css to the DOM by injecting a style tag. Required to write styles in single
@@ -99,6 +100,10 @@ https://github.com/webpack-contrib/html-loader
 Load and compile vuejs files. Includes vue-style-loader.
 https://vue-loader.vuejs.org/en/
 
+## vue-svg-loader
+Load svg files directoy as vue components. Awesome for icons.
+https://github.com/visualfanatic/vue-svg-loader
+
 ## vue-template-compiler
 Required to precompile vue templates.
 https://www.npmjs.com/package/vue-template-loader
@@ -110,6 +115,10 @@ https://github.com/webpack-contrib/uglifyjs-webpack-plugin
 ## webpack
 Webpack utility to transpile the files
 https://webpack.js.org
+
+## webpack-cli
+Command line interface for webpack
+https://webpack.js.org/api/cli/
 
 ## webpack-dev-server
 Development server with file watching and hot reload
