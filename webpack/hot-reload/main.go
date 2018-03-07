@@ -115,12 +115,19 @@ func containsAny(source string, matches []string) bool {
 func symlinkGlobalNodeModules(directory string) error {
 
 	// define the path the node_modules directory
-	nodeModules := directory + "/node_modules"
+	nodeModules := filepath.Join(directory, "node_modules")
+	binDirectory := filepath.Join(nodeModules, ".bin")
 
 	// check if a node directory exists in the same directory
 	// or create if necessary
 	if _, err := os.Stat(nodeModules); os.IsNotExist(err) {
 		os.Mkdir(nodeModules, 0777) // nolint: errcheck
+	}
+
+	// check if a .bin directory exists in the node directory
+	// or create if necessary
+	if _, err := os.Stat(binDirectory); os.IsNotExist(err) {
+		os.Mkdir(binDirectory, 0777) // nolint: errcheck
 	}
 
 	// get all directories in the global node module directory
@@ -134,12 +141,12 @@ func symlinkGlobalNodeModules(directory string) error {
 
 		// copy all items in the binary directory to the local binary directory
 		if item.Name() == ".bin" {
-			fmt.Println("bin directory found")
 
 			binaryLinks, err := ioutil.ReadDir(filepath.Join(globalNodePath, ".bin"))
 			if err != nil {
 				fmt.Println("Error reading global node .bin directory:\n", err)
 			}
+
 			for _, binary := range binaryLinks {
 
 				// check if the module exists already before symlinking
@@ -153,7 +160,7 @@ func symlinkGlobalNodeModules(directory string) error {
 					)
 
 					if err != nil {
-						fmt.Printf("Could not copy binary file from: %s\n", binary.Name())
+						fmt.Printf("Could not copy binary file from %s: %s\n", binary.Name(), err)
 					}
 				}
 
