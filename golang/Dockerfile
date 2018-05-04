@@ -2,7 +2,7 @@
 # FROM envoyproxy/envoy-alpine
 
 # START FROM GO ALPINE
-FROM golang:1.9.2-alpine3.7
+FROM golang:1.10.2-alpine3.7
 
 MAINTAINER Ramon Saccilotto <ramon.saccilotto@usb.ch>
 LABEL copyright="Departement Klinische Forschung, Basel, Switzerland. 2015"
