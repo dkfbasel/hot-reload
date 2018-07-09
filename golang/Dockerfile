@@ -2,15 +2,17 @@
 # FROM envoyproxy/envoy-alpine
 
 # START FROM GO ALPINE
-FROM golang:1.10.2-alpine3.7
+FROM golang:1.10.3-alpine3.7
 
 MAINTAINER Ramon Saccilotto <ramon.saccilotto@usb.ch>
 LABEL copyright="Departement Klinische Forschung, Basel, Switzerland. 2015"
 
-
 # ADD GIT TO DOWNLOAD GO DEPENDENCIES
 RUN apk update && apk upgrade && \
 	apk add --no-cache bash git
+
+# ADD SSH CLIENT TO CONNECT TO GIT REPOSITORIES VIA SSH AND CUSTOM KEYS
+RUN apk add --no-cache openssh-client
 
 # INSTALL GRCP PACKAGE FOR GRPC-SERVICES
 RUN go get -u google.golang.org/grpc
