@@ -116,6 +116,10 @@ https://github.com/webpack-contrib/uglifyjs-webpack-plugin
 Webpack utility to transpile the files
 https://webpack.js.org
 
+## webpack-bundle-analyzer
+Visualize size of webpack output files with a treemap
+https://github.com/webpack-contrib/webpack-bundle-analyzer
+
 ## webpack-cli
 Command line interface for webpack
 https://webpack.js.org/api/cli/
