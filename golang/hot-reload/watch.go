@@ -10,40 +10,20 @@ import (
 	"github.com/fsnotify/fsnotify"
 )
 
-// getExecutableName will get the last part of the package path that is used
-// to name the go executable
-func getExecutableName(packagePath string) string {
-	parts := strings.Split(packagePath, "/")
-	return parts[len(parts)-1]
-}
-
 // watchForChanges will watch the /app volume for changes and rebuild the
 // package as soon as changes occur
-func watchForChanges(command string, directory string, config Config) {
-
-	packagePath := config.ProjectPath + config.Directory
-
-	// get the package name to run the package
-	executable := getExecutableName(packagePath)
-
-	// use go test for testing
-	if command == "test" {
-		executable = "go test"
-	}
-
-	// initialize a change handler to react to changes
-	changeHandler := initHandler(packagePath, executable, config.Arguments)
+func watchForChanges(config Config, notify chan<- bool) {
 
 	// create a new file watcher utilizing inotify
 	watcher, err := fsnotify.NewWatcher()
 	if err != nil {
-		log.Fatalln("Error while watching for changes: %s\n", err)
+		log.Fatalf("Error while watching for changes: %s\n", err)
 	}
 	defer watcher.Close() // nolint: errcheck
 
 	// set the watcher path on the volume directly as symlinks are not followed
 	// by inotify
-	err = filepath.Walk(directory, initWatchlist(watcher, directory, config.Ignore))
+	err = filepath.Walk(config.Directory, initWatchlist(watcher, config.Directory, config.Ignore))
 	if err != nil {
 		log.Fatalln(err)
 	}
@@ -57,7 +37,7 @@ func watchForChanges(command string, directory string, config Config) {
 				// ev.Mask & inotify.IN_MODIFY) == inotify.IN_MODIFY
 
 				// rebuild and restart the package
-				changeHandler.notifications <- true
+				notify <- true
 
 			} else if event.Op&fsnotify.Create == fsnotify.Create {
 				// if (ev.Mask & inotify.IN_CREATE) == inotify.IN_CREATE
@@ -66,7 +46,7 @@ func watchForChanges(command string, directory string, config Config) {
 				addWatch(watcher, event.Name)
 
 				// rebuild and restart the package
-				changeHandler.notifications <- true
+				notify <- true
 
 			} else if event.Op&fsnotify.Remove == fsnotify.Remove {
 				// (ev.Mask & inotify.IN_DELETE) == inotify.IN_DELETE
@@ -75,7 +55,7 @@ func watchForChanges(command string, directory string, config Config) {
 				removeWatch(watcher, event.Name)
 
 				// rebuild and restart the package
-				changeHandler.notifications <- true
+				notify <- true
 
 			}
 

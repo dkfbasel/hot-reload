@@ -1,31 +1,17 @@
-# START WITH THE ENVOY PROXY PACKAGE (ENVOY PROXY CAN BE USED FOR SERVICE MESH)
-# FROM envoyproxy/envoy-alpine
-
 # START FROM GO ALPINE
-FROM golang:1.10.3-alpine3.7
+FROM golang:1.13-alpine
 
-MAINTAINER Ramon Saccilotto <ramon.saccilotto@usb.ch>
-LABEL copyright="Departement Klinische Forschung, Basel, Switzerland. 2015"
+LABEL copyright="Departement Klinische Forschung, Basel, Switzerland. 2019"
 
-# ADD GIT TO DOWNLOAD GO DEPENDENCIES
+# ADD ADDITIONAL PACKAGES
+# - bash for interactive bash
+# - git to download go packages
+# - vim to edit files inside the container
 RUN apk update && apk upgrade && \
-	apk add --no-cache bash git
+	apk add --no-cache bash git vim
 
 # ADD SSH CLIENT TO CONNECT TO GIT REPOSITORIES VIA SSH AND CUSTOM KEYS
 RUN apk add --no-cache openssh-client
-
-# INSTALL GRCP PACKAGE FOR GRPC-SERVICES
-RUN go get -u google.golang.org/grpc
-
-# GRPC PACKAGE CURRENTLY SPECIFIES THE GOLANG-CONTEXT PACKAGE INSTEAD OF USING
-# CONTEXT PACKAGE FROM THE STANDARD LIBRARY
-RUN go get -u golang.org/x/net/context
-
-# INSTALL THE PROTOBUF LIBRARY
-RUN go get -u github.com/golang/protobuf/proto
-
-# INSTALL GOCONVEY FOR TESTS
-RUN go get github.com/smartystreets/goconvey
 
 # COPY THE HOT RELOAD UTILITY INTO THE BIN DIRECTORY
 COPY hot-reload_linux_amd64 /bin/hot-reload
@@ -33,9 +19,8 @@ COPY hot-reload_linux_amd64 /bin/hot-reload
 # THE PROJECT TO WATCH SHOULD BE CONNECTED ON THE /APP VOLUME
 VOLUME ["/app"]
 
-# EXPOSE PORT 80 FOR EXTERNAL CONNECTIONS AND 8080 FOR GOCONVEY
-EXPOSE 80 8080
+# EXPOSE PORT 80 FOR EXTERNAL CONNECTIONS
+EXPOSE 80
 
-# SYMLINK THE APPLICATION DIRECTORY INTO THE GOLANG SOURCE, WATCH FOR CHANGES
-# AND AUTOMATICALLY REBUILD THE APPLICATION
+# WATCH FOR CHANGES AND AUTOMATICALLY REBUILD THE APPLICATION
 CMD ["/bin/hot-reload"]
