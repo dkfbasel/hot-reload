@@ -68,6 +68,10 @@ https://github.com/webpack-contrib/extract-text-webpack-plugin
 Enable hashes for file-paths to improve caching.
 https://github.com/webpack-contrib/file-loader
 
+## launch-editor-middleware
+Enable opening of vue components in the code editor directly from the vue devtools
+https://github.com/yyx990803/launch-editor#middleware
+
 ## postcss-loader
 Postcss loader for webpack. Postcss is required to enable autoprefixer.
 https://github.com/postcss/postcss-loader
