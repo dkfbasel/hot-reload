@@ -1,5 +1,5 @@
 # START FROM GO ALPINE
-FROM golang:1.13-alpine
+FROM golang:1.13.4-alpine
 
 LABEL copyright="Departement Klinische Forschung, Basel, Switzerland. 2019"
 
