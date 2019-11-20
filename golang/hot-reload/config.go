@@ -29,8 +29,12 @@ func parseConfiguration() (Config, error) {
 
 	flag.Parse()
 
-	if config.Directory == "" {
-		config.Directory = os.Getenv("DIRECTORY")
+	// check the environment for the directory flag
+	if config.Directory == "" || config.Directory == defaultDirectory {
+		envDir := os.Getenv("DIRECTORY")
+		if envDir != "" {
+			config.Directory = envDir
+		}
 	}
 
 	if ignore == "" {
