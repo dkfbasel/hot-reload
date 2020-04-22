@@ -1,7 +1,7 @@
 # START FROM GO ALPINE
-FROM golang:1.13.4-alpine
+FROM golang:1.14.2-alpine
 
-LABEL copyright="Departement Klinische Forschung, Basel, Switzerland. 2019"
+LABEL copyright="Departement Klinische Forschung, Basel, Switzerland. 2020"
 
 # ADD ADDITIONAL PACKAGES
 # - bash for interactive bash
