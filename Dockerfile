@@ -14,7 +14,7 @@ RUN apk update && apk upgrade && \
 RUN apk add --no-cache openssh-client
 
 # COPY THE HOT RELOAD UTILITY INTO THE BIN DIRECTORY
-COPY hot-reload_linux_amd64 /bin/hot-reload
+COPY bin/hot-reload_linux_amd64 /bin/hot-reload
 
 # THE PROJECT TO WATCH SHOULD BE CONNECTED ON THE /APP VOLUME
 VOLUME ["/app"]
