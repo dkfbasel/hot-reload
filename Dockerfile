@@ -10,6 +10,10 @@ LABEL copyright="Departement Klinische Forschung, Basel, Switzerland. 2020"
 RUN apk update && apk upgrade && \
 	apk add --no-cache bash git vim
 
+# ADD CURL
+RUN apk add --update curl && \
+	rm -rf /var/cache/apk/*
+
 # ADD SSH CLIENT TO CONNECT TO GIT REPOSITORIES VIA SSH AND CUSTOM KEYS
 RUN apk add --no-cache openssh-client
 
