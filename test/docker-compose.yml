@@ -2,7 +2,9 @@ version: "3.7"
 
 services: 
   app:
-    container_name: hot-reload-go.1.13
-    image: dkfbasel/hot-reload-go:1.13
+    container_name: hot-reload-go.1.14.2
+    image: dkfbasel/hot-reload-go:1.14.2
     volumes:
       - ./src:/app
+    environment:
+      - TIMEOUT=800ms

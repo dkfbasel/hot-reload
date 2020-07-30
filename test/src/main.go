@@ -18,7 +18,7 @@ func main() {
 	var config Specification
 	err := envconfig.Process("myapp", &config)
 	if err != nil {
-		fmt.Println("[ERROR] could not parse config: %+v", err)
+		fmt.Printf("[ERROR] could not parse config: %+v\n", err)
 	}
 
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
