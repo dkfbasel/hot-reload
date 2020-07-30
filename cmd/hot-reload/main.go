@@ -33,7 +33,7 @@ func main() {
 	// wait for input on the notify channel
 	go func() {
 		// handle all notifications
-		for _ = range notifyChan {
+		for range notifyChan {
 
 			// abort any waiting routine using a non blocking send operation
 			// which will only trigger if there is currently an open receiver
