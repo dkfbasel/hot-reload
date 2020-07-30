@@ -11,32 +11,37 @@ import (
 
 var mtx sync.Mutex = sync.Mutex{}
 var runner *exec.Cmd
+var builder *exec.Cmd
 
 // runBuild will run a build command and restart the package
 func runBuild(config Config) {
 
-	// do only allow one build command at the time
+	// kill any current builder
+	if builder != nil {
+		builder.Process.Kill() // nolint:errcheck
+		builder = nil
+	}
+
 	mtx.Lock()
 	defer mtx.Unlock()
 
-	// kill any current runner
-	if runner != nil {
-		runner.Process.Kill() // nolint:errcheck
-	}
+	fmt.Printf("\n%s RELOAD\n----------------------------\n", time.Now().Format("2006/01/02 15:04:05"))
 
-	log.Println("BUILDING\n----------------------------")
-
-	builder := exec.Command("go", "build", "-o", "/tmp/app")
+	builder = exec.Command("go", "build", "-o", "/tmp/app")
 	builder.Dir = config.Directory
 	builder.Stdout = os.Stdout
 	builder.Stderr = os.Stderr
 	err := builder.Run()
 	if err != nil {
-		log.Printf("[ERROR] %+v", err)
+		log.Printf("[BUILD ERROR] %+v", err)
 		return
 	}
 
-	log.Println("RUNNING\n----------------------------")
+	// kill any current runner
+	if runner != nil {
+		runner.Process.Kill() // nolint:errcheck
+		runner = nil
+	}
 
 	// executing the binary
 	runner = exec.Command("/tmp/app", config.Arguments...)
@@ -45,19 +50,13 @@ func runBuild(config Config) {
 	runner.Stderr = os.Stderr
 	err = runner.Start()
 	if err != nil {
-		log.Printf("[ERROR] %+v", err)
+		log.Printf("[RUN ERROR] %+v", err)
 	}
-
-	<-time.After(time.Millisecond * 300)
 
 }
 
 // runTest will run go test on the package
 func runTest(config Config) {
-
-	// do only allow one build command at the time
-	mtx.Lock()
-	defer mtx.Unlock()
 
 	// kill any current runner
 	if runner != nil {
@@ -77,9 +76,7 @@ func runTest(config Config) {
 	// run the program
 	err := runner.Run()
 	if err != nil {
-		fmt.Fprintln(os.Stderr, "ERROR: could not run go test", err)
+		log.Printf("[TEST ERROR] %+v", err)
 	}
-
-	return
 
 }
