@@ -8,6 +8,8 @@ import (
 	"time"
 )
 
+const defaultTimeout = "800ms"
+
 // parseConfiguration will parse the necessary external information from the command line
 // or the environment and return an error if the flag is not defined
 func parseConfiguration() (Config, error) {
@@ -25,7 +27,7 @@ func parseConfiguration() (Config, error) {
 	flag.StringVar(&ignore, "ignore", "", "(optional) directories to ignore when watching for changes")
 	flag.StringVar(&arguments, "args", "", "(optional) arguments to pass to the service on start")
 	flag.StringVar(&config.Command, "cmd", "build", "(optional) use 'build' to auto restart the code, 'test' to automatically run 'go test', 'noop' to not run anything")
-	flag.StringVar(&timeout, "timeout", "1500ms", "(optional) timeout to wait for further file changes until restart is triggered")
+	flag.StringVar(&timeout, "timeout", defaultTimeout, "(optional) timeout to wait for further file changes until restart is triggered")
 
 	flag.Parse()
 
@@ -45,7 +47,7 @@ func parseConfiguration() (Config, error) {
 		arguments = os.Getenv("ARGS")
 	}
 
-	if timeout == "500ms" {
+	if timeout == defaultTimeout {
 		// allow overriding of the default timeout from environment
 		envCommand := os.Getenv("TIMEOUT")
 		if envCommand != "" {
@@ -74,7 +76,7 @@ func parseConfiguration() (Config, error) {
 	}
 
 	// ensure that the directory path starts with a slash
-	if config.Directory != "" && strings.HasPrefix(config.Directory, "/") == false {
+	if config.Directory != "" && !strings.HasPrefix(config.Directory, "/") {
 		config.Directory = "/" + config.Directory
 	}
 
