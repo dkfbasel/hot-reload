@@ -1,9 +1,4 @@
 # !/bin/sh
 
-# build the hot-reload utility
-cd cmd/hot-reload
-GOOS=linux GOARCH=amd64 go build -o ../../bin/hot-reload_linux_amd64
-
-# build the docker container
-cd ../../
-docker build -t dkfbasel/hot-reload-go:1.14.2 .
+# build the hot reload utility and a respective docker container
+docker build -t dkfbasel/hot-reload-go:1.15.0 -f ./Dockerfile ./cmd/hot-reload
