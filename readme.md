@@ -17,15 +17,15 @@ version: '3'
 services:
 
     api:
-        image: dkfbasel/hot-reload-go:1.14.2
+        image: dkfbasel/hot-reload-go:1.16.2
         ports:
             - "3001:80"
         volumes:
-            # mount the project into the docker container. Please note, that the
-            # app directory is symlinked into the project path specified as
-            # environment variable. For goconvey to work, the package must be
-            # linked directly into the the package directory i.e. /go/src/[PROJECTPATH]
+            # mount the project into the docker container. Must use go modules.
             - ..:/app
+            # mount modules directory from source code or as docker volume to
+            # cache go modules
+            - ../_modules:/go/pkg/mod
         environment:
             # directory to look for the main go entry point (default: /app)
             - DIRECTORY=/app
@@ -34,7 +34,7 @@ services:
             - CMD=build
             # arguments can be used to specify arguments to pass to the executable
             # on running
-            - ARGUMENTS=-test=someString
+            - ARGS=-test=someString
             # ignore will indicate which subdirectories to ignore from watching
             - IGNORE=/src/web
         
