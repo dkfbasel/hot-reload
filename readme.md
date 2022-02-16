@@ -17,7 +17,7 @@ version: '3'
 services:
 
     api:
-        image: dkfbasel/hot-reload-go:1.16.2
+        image: dkfbasel/hot-reload-go:1.17.7
         ports:
             - "3001:80"
         volumes:
@@ -35,7 +35,8 @@ services:
             # arguments can be used to specify arguments to pass to the executable
             # on running
             - ARGS=-test=someString
-            # ignore will indicate which subdirectories to ignore from watching
-            - IGNORE=/src/web
+            # ignore will indicate which files and subdirectories to ignore from 
+            # watching, note that the path will be matched from the src directory
+            - IGNORE=/cmd/web,*.md
         
 ```
