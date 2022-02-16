@@ -24,7 +24,7 @@ func parseConfiguration() (Config, error) {
 
 	// parse additional information from the command line
 	flag.StringVar(&config.Directory, "directory", defaultDirectory, "(optional) absolute path of the go module directory inside the docker container")
-	flag.StringVar(&ignore, "ignore", "", "(optional) directories to ignore when watching for changes")
+	flag.StringVar(&ignore, "ignore", "", "(optional) directories and files to ignore when watching for changes")
 	flag.StringVar(&arguments, "args", "", "(optional) arguments to pass to the service on start")
 	flag.StringVar(&config.Command, "cmd", "build", "(optional) use 'build' to auto restart the code, 'test' to automatically run 'go test', 'noop' to not run anything")
 	flag.StringVar(&timeout, "timeout", defaultTimeout, "(optional) timeout to wait for further file changes until restart is triggered")
