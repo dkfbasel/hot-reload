@@ -1,11 +1,14 @@
 package main
 
 import (
+	"fmt"
+	"io/fs"
 	"log"
 	"os"
 	"path"
 	"path/filepath"
 	"strings"
+	"time"
 
 	"github.com/fsnotify/fsnotify"
 )
@@ -21,9 +24,21 @@ func watchForChanges(config Config, notify chan<- bool) {
 	}
 	defer watcher.Close() // nolint: errcheck
 
+	// prefix all ignored directory with /app to create an absolute path
+	ignoreList := make([]string, len(config.Ignore))
+	for index, value := range config.Ignore {
+		ignoreList[index] = path.Join(config.Directory, value)
+	}
+
+	// initialize a map of all ignored files, since we need to cancel the
+	// notification on this files, if they are inside of a watched folder
+	ignoredFiles := make(map[string]struct{})
+
 	// set the watcher path on the volume directly as symlinks are not followed
 	// by inotify
-	err = filepath.Walk(config.Directory, initWatchlist(watcher, config.Directory, config.Ignore))
+	fmt.Printf("%s SETUP\n----------------------------\n", time.Now().Format("2006/01/02 15:04:05"))
+	err = filepath.WalkDir(config.Directory, initWatchlist(watcher, config.Directory,
+		ignoreList, ignoredFiles))
 	if err != nil {
 		log.Fatalln(err)
 	}
@@ -36,11 +51,24 @@ func watchForChanges(config Config, notify chan<- bool) {
 			if event.Op&fsnotify.Write == fsnotify.Write {
 				// ev.Mask & inotify.IN_MODIFY) == inotify.IN_MODIFY
 
+				// ignore all items that are in our ignoredFiles list
+				if _, ok := ignoredFiles[event.Name]; ok {
+					continue
+				}
+
 				// rebuild and restart the package
 				notify <- true
 
 			} else if event.Op&fsnotify.Create == fsnotify.Create {
 				// if (ev.Mask & inotify.IN_CREATE) == inotify.IN_CREATE
+
+				// check if the new item should be added to our ignore list
+				if matchesAny(event.Name, ignoreList) {
+					// ignore the path if there should be any notification, this will
+					// also include new directories, but does not really concern us
+					ignoredFiles[event.Name] = struct{}{}
+					continue
+				}
 
 				// we need to add newly created directories as well
 				addWatch(watcher, event.Name)
@@ -67,35 +95,41 @@ func watchForChanges(config Config, notify chan<- bool) {
 }
 
 // initWatchlist will return a function to watch all subdirectories of the given path
-func initWatchlist(watcher *fsnotify.Watcher, directory string, ignore []string) filepath.WalkFunc {
+func initWatchlist(watcher *fsnotify.Watcher, directory string,
+	ignoreList []string, ignoredFiles map[string]struct{}) fs.WalkDirFunc {
 
 	// skip some directories by default (i.e. vendor and versioning)
 	excludeDirs := []string{"/vendor", "/node_modules", ".git", ".svn"}
 
-	// prefix all ignored directory with /app to create an absolute path
-	ignorePaths := make([]string, len(ignore))
-	for index, value := range ignore {
-		ignorePaths[index] = path.Join(directory, value)
-	}
-
 	// go through all directories
-	return func(path string, info os.FileInfo, err error) error {
-
-		// skip everything that is not a directory
-		if info.IsDir() == false {
-			return nil
-		}
+	return func(path string, info fs.DirEntry, err error) error {
 
 		if containsAny(path, excludeDirs) == true {
+			fmt.Printf("watch: ignore path %s\n", path)
+			watcher.Remove(path) // nolint: errcheck
 			return filepath.SkipDir
 		}
 
 		// ignore all directories that have been specified to be skipped
-		if equalsAny(path, ignorePaths) {
-			return filepath.SkipDir
+		if matchesAny(path, ignoreList) {
+			fmt.Printf("watch: ignore path %s\n", path)
+			watcher.Remove(path) // nolint: errcheck
+			if info.IsDir() {
+				return filepath.SkipDir
+			}
+			// add the file to the list of ignored files, to cancel watcher notifications
+			// effectively later on
+			ignoredFiles[path] = struct{}{}
+			return nil
+		}
+
+		// do not add watchers on specific files
+		if info.IsDir() == false {
+			return nil
 		}
 
 		// watch all other directories
+		fmt.Printf("watch: add path %s\n", path)
 		watcher.Add(path) // nolint: errcheck
 
 		return err
@@ -103,8 +137,7 @@ func initWatchlist(watcher *fsnotify.Watcher, directory string, ignore []string)
 
 }
 
-// addWatch will include newly created directories in the
-// watchlist
+// addWatch will include newly created directories in the watchlist
 func addWatch(watcher *fsnotify.Watcher, path string) {
 
 	info, err := os.Stat(path)
@@ -120,7 +153,6 @@ func addWatch(watcher *fsnotify.Watcher, path string) {
 
 // removeWatch will remove the watcher for the given path
 func removeWatch(watcher *fsnotify.Watcher, path string) {
-
 	// note: this will return an error if the watch does not exist, but we
 	// do not need to care about that
 	watcher.Remove(path) // nolint: errcheck
@@ -128,21 +160,24 @@ func removeWatch(watcher *fsnotify.Watcher, path string) {
 
 // containsAny will check whether any of the matches is part of the given string
 func containsAny(source string, matches []string) bool {
-
 	for _, element := range matches {
 		if strings.Contains(source, element) == true {
 			return true
 		}
 	}
-
 	return false
 }
 
-// equalsAny will check whether the source equals any of the given strings
-func equalsAny(source string, matches []string) bool {
+// matchesAny will check whether the source matches any of the given patterns
+func matchesAny(source string, matches []string) bool {
 
 	for _, element := range matches {
-		if source == element {
+
+		isMatch, err := filepath.Match(element, source)
+		if err != nil {
+			return false
+		}
+		if isMatch {
 			return true
 		}
 	}
