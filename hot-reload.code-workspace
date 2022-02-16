@@ -1,0 +1,11 @@
+{
+	"folders": [
+		{
+			"path": "."
+		},
+		{
+			"path": "cmd/hot-reload"
+		}
+	],
+	"settings": {}
+}
