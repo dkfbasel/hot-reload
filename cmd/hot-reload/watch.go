@@ -10,6 +10,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/becheran/wildmatch-go"
 	"github.com/fsnotify/fsnotify"
 )
 
@@ -129,7 +130,7 @@ func initWatchlist(watcher *fsnotify.Watcher, directory string,
 		}
 
 		// watch all other directories
-		fmt.Printf("watch: add path %s\n", path)
+		// fmt.Printf("watch: add path %s\n", path)
 		watcher.Add(path) // nolint: errcheck
 
 		return err
@@ -169,17 +170,12 @@ func containsAny(source string, matches []string) bool {
 }
 
 // matchesAny will check whether the source matches any of the given patterns
-func matchesAny(source string, matches []string) bool {
+func matchesAny(path string, patterns []string) bool {
 
-	for _, element := range matches {
-
-		isMatch, err := filepath.Match(element, source)
-		if err != nil {
-			return false
-		}
-		if isMatch {
-			return true
-		}
+	for _, pattern := range patterns {
+		// use wildmatch-library for simple pattern matching
+		matcher := wildmatch.NewWildMatch(pattern)
+		return matcher.IsMatch(path)
 	}
 
 	return false

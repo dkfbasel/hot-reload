@@ -8,4 +8,4 @@ services:
       - ./src:/app
     environment:
       - TIMEOUT=800ms
-      - IGNORE=*.md,ignorethis
+      - IGNORE=*.md,ignorethis,*.log
