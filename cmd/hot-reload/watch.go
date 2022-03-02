@@ -175,7 +175,9 @@ func matchesAny(path string, patterns []string) bool {
 	for _, pattern := range patterns {
 		// use wildmatch-library for simple pattern matching
 		matcher := wildmatch.NewWildMatch(pattern)
-		return matcher.IsMatch(path)
+		if matcher.IsMatch(path) {
+			return true
+		}
 	}
 
 	return false
