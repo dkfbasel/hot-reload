@@ -1,7 +1,7 @@
 # --- BUILD IMAGE ---
 
 # USE GOLANG CONTAINER TO BUILD THE APPLICATION
-FROM golang:1.18.2 as build
+FROM golang:1.19.2 as build
 
 WORKDIR /src
 
