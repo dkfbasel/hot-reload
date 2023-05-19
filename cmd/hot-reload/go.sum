@@ -2,5 +2,10 @@ github.com/becheran/wildmatch-go v1.0.0 h1:mE3dGGkTmpKtT4Z+88t8RStG40yN9T+kFEGj2
 github.com/becheran/wildmatch-go v1.0.0/go.mod h1:gbMvj0NtVdJ15Mg/mH9uxk2R1QCistMyU7d9KFzroX4=
 github.com/fsnotify/fsnotify v1.4.3-0.20161026203122-fd9ec7deca8b h1:bZQ3Z4jYxLufSFf7zo/cLJ/1WahBEMPCFsgcOjzAAzA=
 github.com/fsnotify/fsnotify v1.4.3-0.20161026203122-fd9ec7deca8b/go.mod h1:jwhsz4b93w/PPRr/qN1Yymfu8t87LnFCMoQvtojpjFo=
+github.com/fsnotify/fsnotify v1.6.0 h1:n+5WquG0fcWoWp6xPWfHdbskMCQaFnG6PfBrh1Ky4HY=
+github.com/fsnotify/fsnotify v1.6.0/go.mod h1:sl3t1tCWJFWoRz9R8WJCbQihKKwmorjAbSClcnxKAGw=
 golang.org/x/sys v0.0.0-20161122214834-30237cf4eefd h1:+NpmjbOwKk60ZOcrLw/zrhwc0fIJzIA1NWLqmEpxrvU=
 golang.org/x/sys v0.0.0-20161122214834-30237cf4eefd/go.mod h1:STP8DvDyc/dI5b8T5hshtkjS+E42TnysNCUPdjciGhY=
+golang.org/x/sys v0.0.0-20220908164124-27713097b956/go.mod h1:oPkhp1MJrh7nUepCBck5+mAzfO9JrbApNNgaTdGDITg=
+golang.org/x/sys v0.8.0 h1:EBmGv8NaZBZTWvrbjNoL6HVt+IVy3QDQpJs7VRIw3tU=
+golang.org/x/sys v0.8.0/go.mod h1:oPkhp1MJrh7nUepCBck5+mAzfO9JrbApNNgaTdGDITg=
