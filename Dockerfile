@@ -1,7 +1,7 @@
 # --- BUILD IMAGE ---
 
 # USE GOLANG CONTAINER TO BUILD THE APPLICATION
-FROM golang:1.21.1 as build
+FROM golang:1.21.3 as build
 
 WORKDIR /src
 
@@ -20,7 +20,7 @@ RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -a -installsuffix cgo -o ./ho
 # --- RUNTIME IMAGE ---
 
 # START FROM GO ALPINE
-FROM golang:1.21.1-alpine3.18
+FROM golang:1.21.3-alpine3.18
 
 LABEL copyright="Departement Klinische Forschung, Basel, Switzerland. 2023"
 
