@@ -15,7 +15,7 @@ RUN go mod download
 COPY . /src
 
 # BUILD THE HOT RELOAD UTILITY (CGO MUST BE DISABLED TO RUN IT ON ALPINE)
-RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -a -installsuffix cgo -o ./hot-reload
+RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -gcflags="all=-N -l" -a -installsuffix cgo -o ./hot-reload
 
 # --- RUNTIME IMAGE ---
 
@@ -35,6 +35,9 @@ RUN apk update && apk upgrade && \
 RUN apk add --update curl && \
 	rm -rf /var/cache/apk/*
 
+
+RUN go install github.com/go-delve/delve/cmd/dlv@v1.24.2
+
 # ADD SSH CLIENT TO CONNECT TO GIT REPOSITORIES VIA SSH AND CUSTOM KEYS
 RUN apk add --no-cache openssh-client
 
@@ -46,6 +49,7 @@ VOLUME ["/app"]
 
 # EXPOSE PORT 80 FOR EXTERNAL CONNECTIONS
 EXPOSE 80
+EXPOSE 2345
 
 # WATCH FOR CHANGES AND AUTOMATICALLY REBUILD THE APPLICATION
 CMD ["/bin/hot-reload"]
