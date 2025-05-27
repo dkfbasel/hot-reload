@@ -1,9 +1,10 @@
-version: "3.7"
-
 services:
   app:
-    container_name: hot-reload-go.1.21.5
-    image: dkfbasel/hot-reload-go:1.21.5
+    container_name: hot-reload-go.1.24.2
+    image: dkfbasel/hot-reload-go:1.24.2
+    ports:
+      - "2345:2345"
+      - "80:80"
     volumes:
       - ./src:/app
     environment:
