@@ -43,8 +43,19 @@ func runBuild(config Config) {
 		runner = nil
 	}
 
-	// executing the binary
-	runner = exec.Command("/tmp/app", config.Arguments...)
+	// executing the binary using delve debugger
+	args := []string{
+		"exec", "/tmp/app",
+		"--headless", "--listen=:2345", "--api-version=2", "--accept-multiclient",
+	}
+
+	// append additional arguments to the debugged application
+	if len(config.Arguments) > 0 {
+		args = append(args, "--")
+		args = append(args, config.Arguments...)
+	}
+
+	runner = exec.Command("dlv", args...)
 	runner.Dir = config.Directory
 	runner.Stdout = os.Stdout
 	runner.Stderr = os.Stderr
