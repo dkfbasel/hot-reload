@@ -50,6 +50,7 @@ func main() {
 					switch config.Command {
 					case "build":
 						runBuild(config)
+						broadcast("reload")
 
 					case "test":
 						runTest(config)
@@ -65,6 +66,9 @@ func main() {
 
 	// initialize the first build
 	notifyChan <- true
+
+	// run a proxy web server to handle hot reload requests
+	go runHttpServer()
 
 	// watch the supplied directory for changes
 	watchForChanges(config, notifyChan)

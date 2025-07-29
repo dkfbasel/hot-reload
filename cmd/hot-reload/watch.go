@@ -105,7 +105,7 @@ func initWatchlist(watcher *fsnotify.Watcher, directory string,
 	// go through all directories
 	return func(path string, info fs.DirEntry, err error) error {
 
-		if containsAny(path, excludeDirs) == true {
+		if containsAny(path, excludeDirs) {
 			fmt.Printf("watch: ignore path %s\n", path)
 			watcher.Remove(path) // nolint: errcheck
 			return filepath.SkipDir
@@ -125,7 +125,7 @@ func initWatchlist(watcher *fsnotify.Watcher, directory string,
 		}
 
 		// do not add watchers on specific files
-		if info.IsDir() == false {
+		if !info.IsDir() {
 			return nil
 		}
 
@@ -162,7 +162,7 @@ func removeWatch(watcher *fsnotify.Watcher, path string) {
 // containsAny will check whether any of the matches is part of the given string
 func containsAny(source string, matches []string) bool {
 	for _, element := range matches {
-		if strings.Contains(source, element) == true {
+		if strings.Contains(source, element) {
 			return true
 		}
 	}
