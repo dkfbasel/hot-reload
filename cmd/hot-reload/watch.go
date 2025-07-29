@@ -125,7 +125,7 @@ func initWatchlist(watcher *fsnotify.Watcher, directory string,
 		}
 
 		// do not add watchers on specific files
-		if !info.IsDir() {
+		if info != nil && info.IsDir() {
 			return nil
 		}
 

@@ -1,10 +1,12 @@
 package main
 
 import (
+	"bufio"
 	"bytes"
 	"fmt"
+	"log"
+	"net"
 	"net/http"
-	"path/filepath"
 	"strings"
 	"sync"
 )
@@ -15,10 +17,11 @@ var (
 )
 
 const reloadScript = `
-<script src="https://unpkg.com/morphdom"></script>
+<script src="https://unpkg.com/morphdom@2.6.1/dist/morphdom-umd.min.js"></script>
 <script>
-const evtSource = new EventSource("/events");
+const evtSource = new EventSource("/hotreload");
 evtSource.onmessage = async function(event) {
+	console.log("Reloading page due to hot reload event");
     if (event.data === "reload") {
         const response = await fetch(window.location.href, { headers: { "X-Partial": "true" } });
         const parser = new DOMParser();
@@ -82,28 +85,31 @@ func broadcast(msg string) {
 
 // injectreloadscript wraps a handler and injects a reload script into html responses
 func injectReloadScript(next http.Handler) http.Handler {
+
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		// only handle html responses for injection
-		if filepath.Ext(r.URL.Path) != ".html" && r.URL.Path != "/" {
+
+		if strings.HasPrefix(r.URL.Path, "/hotreload") || r.Header.Get("Accept") == "text/event-stream" {
+			log.Println("Skipping script injection for SSE or hotreload endpoint")
 			next.ServeHTTP(w, r)
 			return
 		}
-
-		// capture the response body
+		// capture the response
 		rw := &responseWriterCapture{ResponseWriter: w}
 		next.ServeHTTP(rw, r)
 
-		// check if content type is html
-		contentType := w.Header().Get("Content-Type")
+		// check if the content type is html
+		contentType := rw.Header().Get("Content-Type")
 		if contentType == "" || strings.Contains(contentType, "text/html") {
 			html := rw.body.String()
-			// inject the reload script before closing body tag
-			modified := strings.Replace(html, "</body>", reloadScript+"</body>", 1)
+			// inject the reload script before </head>
+			modified := strings.Replace(html, "</head>", reloadScript+"</head>", 1)
 			w.Header().Set("Content-Length", fmt.Sprint(len(modified)))
-			w.WriteHeader(http.StatusOK)
+			if !rw.wroteHeader {
+				w.WriteHeader(http.StatusOK) // or rw.status if you want the original
+			}
 			w.Write([]byte(modified))
 		} else {
-			// if not html, just pass the original response
+			// just forward the original response
 			w.WriteHeader(rw.status)
 			w.Write(rw.body.Bytes())
 		}
@@ -114,15 +120,55 @@ func injectReloadScript(next http.Handler) http.Handler {
 type responseWriterCapture struct {
 	http.ResponseWriter              // original response writer
 	body                bytes.Buffer // buffer to store response body
-	status              int          // status code to store
+	status              int          // captured status code
+	wroteHeader         bool         // tracks if writeheader was called
 }
 
-// write writes to the buffer instead of directly to the client
+// write captures the response body (but does not write to client yet)
 func (r *responseWriterCapture) Write(b []byte) (int, error) {
 	return r.body.Write(b)
 }
 
-// writeheader stores the status code instead of writing it immediately
+// writeheader captures the status code
 func (r *responseWriterCapture) WriteHeader(statusCode int) {
+	if r.wroteHeader {
+		return
+	}
 	r.status = statusCode
+	r.wroteHeader = true
+}
+
+// flushtoclient sends the captured body to the real responsewriter
+func (r *responseWriterCapture) FlushToClient() error {
+	// if no status was written, default to 200
+	if !r.wroteHeader {
+		r.status = http.StatusOK
+		r.ResponseWriter.WriteHeader(r.status)
+	}
+	_, err := r.ResponseWriter.Write(r.body.Bytes())
+	return err
+}
+
+// implements http.hijacker
+func (r *responseWriterCapture) Hijack() (net.Conn, *bufio.ReadWriter, error) {
+	hj, ok := r.ResponseWriter.(http.Hijacker)
+	if !ok {
+		return nil, nil, fmt.Errorf("underlying responsewriter does not support hijacking")
+	}
+	return hj.Hijack()
+}
+
+// implements http.flusher
+func (r *responseWriterCapture) Flush() {
+	if fl, ok := r.ResponseWriter.(http.Flusher); ok {
+		fl.Flush()
+	}
+}
+
+// implements http.closenotifier (deprecated but still seen)
+func (r *responseWriterCapture) CloseNotify() <-chan bool {
+	if cn, ok := r.ResponseWriter.(http.CloseNotifier); ok {
+		return cn.CloseNotify()
+	}
+	return make(chan bool)
 }

@@ -15,6 +15,7 @@ type Config struct {
 	Ignore    []string      // directories to ignore when watching for changes
 	Arguments []string      // arguments to pass to the service
 	Timeout   time.Duration // timeout as time string (i.e 300ms)
+	Proxy     string        // address of the app which should be proxied
 }
 
 func main() {
@@ -68,7 +69,7 @@ func main() {
 	notifyChan <- true
 
 	// run a proxy web server to handle hot reload requests
-	go runHttpServer()
+	go runHttpServer(config)
 
 	// watch the supplied directory for changes
 	watchForChanges(config, notifyChan)
