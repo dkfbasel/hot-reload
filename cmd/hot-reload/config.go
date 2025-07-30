@@ -9,7 +9,6 @@ import (
 )
 
 const defaultTimeout = "800ms"
-const defaultProxy = "http://localhost:3000"
 
 // parseConfiguration will parse the necessary external information from the command line
 // or the environment and return an error if the flag is not defined
@@ -30,7 +29,7 @@ func parseConfiguration() (Config, error) {
 	flag.StringVar(&arguments, "args", "", "(optional) arguments to pass to the service on start")
 	flag.StringVar(&config.Command, "cmd", "build", "(optional) use 'build' to auto restart the code, 'test' to automatically run 'go test', 'noop' to not run anything")
 	flag.StringVar(&timeout, "timeout", defaultTimeout, "(optional) timeout to wait for further file changes until restart is triggered")
-	flag.StringVar(&proxy, "proxy", defaultProxy, "(optional) address of the app which should be proxied")
+	flag.StringVar(&proxy, "proxy", "", "(optional) address of the app which should be proxied. no proxy is used if left empty")
 
 	flag.Parse()
 
@@ -58,10 +57,9 @@ func parseConfiguration() (Config, error) {
 		}
 	}
 
-	if proxy == defaultProxy {
+	if proxy == "" {
 		// allow overriding of the default proxy from environment
 		envProxy := os.Getenv("PROXY")
-		fmt.Println("envProxy", envProxy)
 		if envProxy != "" {
 			proxy = envProxy
 		}
@@ -109,10 +107,8 @@ func parseConfiguration() (Config, error) {
 		if !strings.HasPrefix(proxy, "http://") && !strings.HasPrefix(proxy, "https://") {
 			proxy = "http://" + proxy
 		}
-		config.Proxy = proxy
-	} else {
-		config.Proxy = defaultProxy
 	}
+	config.Proxy = proxy
 
 	// parse the timeout duration
 	var err error

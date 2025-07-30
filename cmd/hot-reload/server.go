@@ -21,10 +21,10 @@ func reverseProxyHandler(target string) http.Handler {
 }
 
 // runhttpserver sets up the http server, sse handler, and proxy routing
-func runHttpServer(config Config) {
+func runHttpServer(proxyAddress string) {
 
 	// create the reverse proxy handler pointing to the target address
-	proxy := reverseProxyHandler(config.Proxy)
+	proxy := reverseProxyHandler(proxyAddress)
 
 	// handle sse hotreload endpoint
 	http.HandleFunc("/hotreload", sseHandler)

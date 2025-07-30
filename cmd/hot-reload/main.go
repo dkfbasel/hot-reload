@@ -15,7 +15,7 @@ type Config struct {
 	Ignore    []string      // directories to ignore when watching for changes
 	Arguments []string      // arguments to pass to the service
 	Timeout   time.Duration // timeout as time string (i.e 300ms)
-	Proxy     string        // address of the app which should be proxied
+	Proxy     string        // address of the app which should be proxied / if left empty, no proxy is used
 }
 
 func main() {
@@ -51,7 +51,10 @@ func main() {
 					switch config.Command {
 					case "build":
 						runBuild(config)
-						broadcast("reload")
+						// if a proxy is set, broadcast a reload message
+						if config.Proxy != "" {
+							broadcast("reload")
+						}
 
 					case "test":
 						runTest(config)
@@ -69,7 +72,9 @@ func main() {
 	notifyChan <- true
 
 	// run a proxy web server to handle hot reload requests
-	go runHttpServer(config)
+	if config.Proxy != "" {
+		go runHttpServer(config.Proxy)
+	}
 
 	// watch the supplied directory for changes
 	watchForChanges(config, notifyChan)

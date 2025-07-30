@@ -21,7 +21,6 @@ const reloadScript = `
 <script>
 const evtSource = new EventSource("/hotreload");
 evtSource.onmessage = async function(event) {
-	console.log("Reloading page due to hot reload event");
     if (event.data === "reload") {
         const response = await fetch(window.location.href, { headers: { "X-Partial": "true" } });
         const parser = new DOMParser();
