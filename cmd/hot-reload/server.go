@@ -45,10 +45,10 @@ func reverseProxyHandler(target string) http.Handler {
 }
 
 // runhttpserver sets up the http server, sse handler, and proxy routing
-func runHttpServer(proxyAddress string) {
+func runHttpServer(proxyTarget string, proxyPort string) {
 
 	// create the reverse proxy handler pointing to the target address
-	proxy := reverseProxyHandler(proxyAddress)
+	proxy := reverseProxyHandler(proxyTarget)
 
 	// handle sse hotreload endpoint
 	http.HandleFunc("/hotreload", sseHandler)
@@ -57,8 +57,8 @@ func runHttpServer(proxyAddress string) {
 	http.Handle("/", injectReloadScript(proxy))
 
 	// start the server on port 3333
-	log.Println("server started at http://localhost:3333")
-	log.Fatal(http.ListenAndServe(":3333", nil))
+	log.Println("server started at http://localhost:" + proxyPort)
+	log.Fatal(http.ListenAndServe(":"+proxyPort, nil))
 }
 
 // checkTargetHealth checks if the target server is up and reachable.

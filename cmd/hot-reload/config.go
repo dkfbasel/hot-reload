@@ -9,6 +9,7 @@ import (
 )
 
 const defaultTimeout = "800ms"
+const defaultProxyPort = "3333"
 
 // parseConfiguration will parse the necessary external information from the command line
 // or the environment and return an error if the flag is not defined
@@ -21,7 +22,8 @@ func parseConfiguration() (Config, error) {
 	var ignore string
 	var arguments string
 	var timeout string
-	var proxy string
+	var proxytarget string
+	var proxyport string
 
 	// parse additional information from the command line
 	flag.StringVar(&config.Directory, "directory", defaultDirectory, "(optional) absolute path of the go module directory inside the docker container")
@@ -29,7 +31,8 @@ func parseConfiguration() (Config, error) {
 	flag.StringVar(&arguments, "args", "", "(optional) arguments to pass to the service on start")
 	flag.StringVar(&config.Command, "cmd", "build", "(optional) use 'build' to auto restart the code, 'test' to automatically run 'go test', 'noop' to not run anything")
 	flag.StringVar(&timeout, "timeout", defaultTimeout, "(optional) timeout to wait for further file changes until restart is triggered")
-	flag.StringVar(&proxy, "proxy", "", "(optional) address of the app which should be proxied. no proxy is used if left empty")
+	flag.StringVar(&proxytarget, "proxytarget", "", "(optional) address of the app which should be proxied. no proxy is used if left empty")
+	flag.StringVar(&proxyport, "proxyport", defaultProxyPort, "(optional) port to run the proxy server on")
 
 	flag.Parse()
 
@@ -57,11 +60,19 @@ func parseConfiguration() (Config, error) {
 		}
 	}
 
-	if proxy == "" {
+	if proxytarget == "" {
 		// allow overriding of the default proxy from environment
-		envProxy := os.Getenv("PROXY")
+		envProxy := os.Getenv("PROXYTARGET")
 		if envProxy != "" {
-			proxy = envProxy
+			proxytarget = envProxy
+		}
+	}
+
+	if proxyport == defaultProxyPort {
+		// allow overriding of the default proxy port from environment
+		envProxyPort := os.Getenv("PROXYPORT")
+		if envProxyPort != "" {
+			proxyport = envProxyPort
 		}
 	}
 
@@ -103,12 +114,16 @@ func parseConfiguration() (Config, error) {
 		config.Arguments = strings.Split(arguments, " ")
 	}
 
-	if proxy != "" {
-		if !strings.HasPrefix(proxy, "http://") && !strings.HasPrefix(proxy, "https://") {
-			proxy = "http://" + proxy
+	if proxytarget != "" {
+		if !strings.HasPrefix(proxytarget, "http://") && !strings.HasPrefix(proxytarget, "https://") {
+			proxytarget = "http://" + proxytarget
 		}
 	}
-	config.Proxy = proxy
+	config.ProxyTarget = proxytarget
+
+	if proxyport != "" {
+		config.ProxyPort = proxyport
+	}
 
 	// parse the timeout duration
 	var err error

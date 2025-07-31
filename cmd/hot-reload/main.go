@@ -10,12 +10,13 @@ var defaultDirectory = "/app"
 
 // Config contains all flags than can be passed to the utility
 type Config struct {
-	Directory string        // the main directory of the project
-	Command   string        // the command to use for watching
-	Ignore    []string      // directories to ignore when watching for changes
-	Arguments []string      // arguments to pass to the service
-	Timeout   time.Duration // timeout as time string (i.e 300ms)
-	Proxy     string        // address of the app which should be proxied / if left empty, no proxy is used
+	Directory   string        // the main directory of the project
+	Command     string        // the command to use for watching
+	Ignore      []string      // directories to ignore when watching for changes
+	Arguments   []string      // arguments to pass to the service
+	Timeout     time.Duration // timeout as time string (i.e 300ms)
+	ProxyTarget string        // address of the app which should be proxied / if left empty, no proxy is used
+	ProxyPort   string        // port to run the proxy server on
 }
 
 func main() {
@@ -52,7 +53,7 @@ func main() {
 					case "build":
 						runBuild(config)
 						// if a proxy is set, broadcast a reload message
-						if config.Proxy != "" {
+						if config.ProxyTarget != "" && config.ProxyPort != "" {
 							broadcast("reload")
 						}
 
@@ -72,8 +73,8 @@ func main() {
 	notifyChan <- true
 
 	// run a proxy web server to handle hot reload requests
-	if config.Proxy != "" {
-		go runHttpServer(config.Proxy)
+	if config.ProxyTarget != "" {
+		go runHttpServer(config.ProxyTarget, config.ProxyPort)
 	}
 
 	// watch the supplied directory for changes
