@@ -1,0 +1,13 @@
+services:
+  app:
+    container_name: morphdom.app
+    image: dkfbasel/hot-reload-go:1.24.2-proxy
+    restart: unless-stopped
+    ports:
+      - 2525:2525
+    working_dir: /app
+    volumes:
+      - ./src:/app
+    environment:
+      - PROXYTARGET=localhost:3000
+      - PROXYPORT=2525
