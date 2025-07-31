@@ -22,6 +22,7 @@ const reloadScript = `
 const evtSource = new EventSource("/hotreload");
 evtSource.onmessage = async function(event) {
     if (event.data === "reload") {
+		console.log("Reloading body dom...");
         const response = await fetch(window.location.href, { headers: { "X-Partial": "true" } });
         const parser = new DOMParser();
         const doc = parser.parseFromString(await response.text(), "text/html");
