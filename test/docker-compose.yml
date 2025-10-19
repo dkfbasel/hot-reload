@@ -1,9 +1,7 @@
-version: "3.7"
-
 services:
   app:
-    container_name: hot-reload-go.1.24.1
-    image: dkfbasel/hot-reload-go:1.24.1
+    container_name: hot-reload-go.1.25.3
+    image: dkfbasel/hot-reload-go:1.25.3
     volumes:
       - ./src:/app
     environment:
