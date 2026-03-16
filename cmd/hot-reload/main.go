@@ -12,6 +12,7 @@ var defaultDirectory = "/app"
 type Config struct {
 	Directory string        // the main directory of the project
 	Command   string        // the command to use for watching
+	Watch     []string      // additional directory to watch outside of the main project directory
 	Ignore    []string      // directories to ignore when watching for changes
 	Arguments []string      // arguments to pass to the service
 	Timeout   time.Duration // timeout as time string (i.e 300ms)

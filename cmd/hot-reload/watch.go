@@ -25,10 +25,27 @@ func watchForChanges(config Config, notify chan<- bool) {
 	}
 	defer watcher.Close() // nolint: errcheck
 
-	// prefix all ignored directory with /app to create an absolute path
-	ignoreList := make([]string, len(config.Ignore))
-	for index, value := range config.Ignore {
-		ignoreList[index] = path.Join(config.Directory, value)
+	// collect all watch roots so that relative ignore patterns apply to all of them
+	watchRoots := []string{config.Directory}
+	for _, watchEntry := range config.Watch {
+		if filepath.IsAbs(watchEntry) {
+			watchRoots = append(watchRoots, watchEntry)
+		} else {
+			watchRoots = append(watchRoots, path.Join(config.Directory, watchEntry))
+		}
+	}
+
+	// build the ignore list: absolute paths are used as-is, relative paths are
+	// resolved against every watch root so they apply across all watched directories
+	var ignoreList []string
+	for _, value := range config.Ignore {
+		if filepath.IsAbs(value) {
+			ignoreList = append(ignoreList, value)
+		} else {
+			for _, root := range watchRoots {
+				ignoreList = append(ignoreList, path.Join(root, value))
+			}
+		}
 	}
 
 	// initialize a map of all ignored files, since we need to cancel the
@@ -38,10 +55,25 @@ func watchForChanges(config Config, notify chan<- bool) {
 	// set the watcher path on the volume directly as symlinks are not followed
 	// by inotify
 	fmt.Printf("%s SETUP\n----------------------------\n", time.Now().Format("2006/01/02 15:04:05"))
+
+	// add the main command directory to the watch list
 	err = filepath.WalkDir(config.Directory, initWatchlist(watcher, config.Directory,
 		ignoreList, ignoredFiles))
 	if err != nil {
 		log.Fatalln(err)
+	}
+
+	// watch additional directories specified as environment variables
+	for _, watchEntry := range config.Watch {
+		absPath := watchEntry
+		if !filepath.IsAbs(absPath) {
+			absPath = path.Join(config.Directory, absPath)
+		}
+		err = filepath.WalkDir(absPath, initWatchlist(watcher, absPath,
+			ignoreList, ignoredFiles))
+		if err != nil {
+			log.Fatalln(err)
+		}
 	}
 
 	for {

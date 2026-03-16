@@ -4,11 +4,13 @@ services:
     image: dkfbasel/hot-reload-go:1.26.1
     volumes:
       - ./src:/app
+      - ./additional:/additional
       - gomod:/go/pkg/mod
       - gocache:/root/.cache/go-build
     environment:
       - TIMEOUT=800ms
       - IGNORE=*.md,ignorethis,*.log
+      - WATCH=/additional
 
 volumes:
   gomod:

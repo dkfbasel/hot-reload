@@ -17,13 +17,14 @@ func parseConfiguration() (Config, error) {
 	// the package import path should be supplied via flag or environment variable
 	config := Config{}
 
-	// initialize a string for our ignore values
+	var watch string
 	var ignore string
 	var arguments string
 	var timeout string
 
 	// parse additional information from the command line
 	flag.StringVar(&config.Directory, "directory", defaultDirectory, "(optional) absolute path of the go module directory inside the docker container")
+	flag.StringVar(&ignore, "watch", "", "(optional) directories and files to include when watching for changes")
 	flag.StringVar(&ignore, "ignore", "", "(optional) directories and files to ignore when watching for changes")
 	flag.StringVar(&arguments, "args", "", "(optional) arguments to pass to the service on start")
 	flag.StringVar(&config.Command, "cmd", "build", "(optional) use 'build' to auto restart the code, 'test' to automatically run 'go test', 'noop' to not run anything")
@@ -37,6 +38,10 @@ func parseConfiguration() (Config, error) {
 		if envDir != "" {
 			config.Directory = envDir
 		}
+	}
+
+	if watch == "" {
+		watch = os.Getenv("WATCH")
 	}
 
 	if ignore == "" {
@@ -80,12 +85,19 @@ func parseConfiguration() (Config, error) {
 		config.Directory = "/" + config.Directory
 	}
 
+	if watch != "" {
+		config.Watch = strings.Split(watch, ",")
+
+		for index, value := range config.Watch {
+			config.Watch[index] = strings.TrimSpace(value)
+		}
+	}
+
 	if ignore != "" {
 		config.Ignore = strings.Split(ignore, ",")
 
 		for index, value := range config.Ignore {
-			value = strings.TrimSpace(value)
-			config.Ignore[index] = strings.TrimLeft(value, "/")
+			config.Ignore[index] = strings.TrimSpace(value)
 		}
 	}
 

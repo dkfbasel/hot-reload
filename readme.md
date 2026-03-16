@@ -37,8 +37,11 @@ services:
             # on running
             - ARGS=-test=someString
             # Ignore will indicate which files and subdirectories to ignore from 
-            # watching, note that the path will be matched from the src directory
+            # watching, relative and absolute paths are supported
             - IGNORE=/cmd/web,*.md
+            # Watch will add additional files and directories to add to watch
+            # for changes. Tthe ignore list is applied to those directories as well
+            - WATCH=/src,.env
         
 volumes:
   gomod:
