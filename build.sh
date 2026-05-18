@@ -1,4 +1,4 @@
 # !/bin/sh
 
 # build the hot reload utility and a respective docker container
-docker build -t dkfbasel/hot-reload-go:1.26.1 -f ./Dockerfile ./cmd/hot-reload
+docker build -t dkfbasel/hot-reload-go:1.26.2 -f ./Dockerfile ./cmd/hot-reload
