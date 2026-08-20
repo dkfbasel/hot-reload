@@ -1,7 +1,7 @@
 services:
   app:
-    container_name: hot-reload-go.1.26.6
-    image: dkfbasel/hot-reload-go:1.26.6
+    container_name: hot-reload-go.1.27.0
+    image: dkfbasel/hot-reload-go:1.27.0
     volumes:
       - ./src:/app
       - ./additional:/additional
